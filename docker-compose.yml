@@ -1,0 +1,9 @@
+version: '3.9'
+
+services:
+  app:
+    container_name: shift-management-system
+    build:
+      context: .
+    ports:
+      - "3000:3000"
