@@ -1,7 +1,7 @@
 version: '3.9'
 
 services:
-  app:
+  backend:
     container_name: shift-management-system
     build:
       context: .
@@ -13,3 +13,21 @@ services:
     restart: "unless-stopped"
     volumes:
       - .:/rails
+  postgres:
+      container_name: shift-management-app-db
+      image: postgres:13.3-alpine
+      restart: "unless-stopped"
+      env_file:
+        - .env
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+      ports:
+        - 5435:5432
+      environment:
+        - POSTGRES_USER=platform_user
+        - POSTGRES_PASSWORD=local_db_platform
+        - POSTGRES_DB=shift-management-app-db
+        
+volumes:
+  postgres_data:
+    driver: local

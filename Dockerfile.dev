@@ -23,7 +23,7 @@ ENV RAILS_ENV="development" \
 
 # Install packages needed to build gems
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git pkg-config && \
+    apt-get install --no-install-recommends -y build-essential libpq-dev git pkg-config && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Install application gems
@@ -40,5 +40,5 @@ RUN bundle exec bootsnap precompile app/ lib/
 # Expose the development port
 EXPOSE 3000
 
-# Start the server by default, this can be overwritten at runtime
-CMD ["./bin/rails", "server", "-b", "0.0.0.0"]
+# run the startup script "startupDev.sh"
+CMD ["/bin/bash", "startupDev.sh"]
