@@ -13,6 +13,11 @@ services:
     restart: "unless-stopped"
     volumes:
       - .:/rails
+    networks:
+      - shift-management-network
+    depends_on:
+      - postgres
+
   postgres:
       container_name: shift-management-app-db
       image: postgres:13.3-alpine
@@ -27,7 +32,13 @@ services:
         - POSTGRES_USER=platform_user
         - POSTGRES_PASSWORD=local_db_platform
         - POSTGRES_DB=shift-management-app-db
+      networks:
+            - shift-management-network
         
 volumes:
   postgres_data:
     driver: local
+
+networks:
+  shift-management-network:
+    driver: bridge
