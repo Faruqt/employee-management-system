@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_26_130454) do
+ActiveRecord::Schema[7.2].define(version: 2024_11_26_132140) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -26,5 +26,9 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_26_130454) do
     t.string "shift_code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "is_deleted"
+    t.date "date_of_birth"
+    t.date "contract_start_date"
+    t.date "contract_end_date"
   end
 end
