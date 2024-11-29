@@ -32,7 +32,7 @@ gem "tzinfo-data", platforms: %i[ windows jruby ]
 gem "bootsnap", require: false
 
 # Postgres as the database for Active Record
-gem 'pg'
+gem "pg"
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
@@ -62,5 +62,5 @@ end
 # Use AWS SDK for Ruby
 # https://docs.aws.amazon.com/sdk-for-ruby/v3/developer-guide/setup-config.html
 #
-gem 'aws-sdk-cognitoidentityprovider'
-gem 'aws-sdk-s3'
+gem "aws-sdk-cognitoidentityprovider"
+gem "aws-sdk-s3"

@@ -25,7 +25,7 @@ module ShiftManagementSystem
 
     # Configure active record to use UUIDs as primary keys
     config.active_record.primary_key = :uuid
-    
+
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
   end
