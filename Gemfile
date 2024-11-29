@@ -58,3 +58,9 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+# Use AWS SDK for Ruby
+# https://docs.aws.amazon.com/sdk-for-ruby/v3/developer-guide/setup-config.html
+#
+gem 'aws-sdk-cognitoidentityprovider'
+gem 'aws-sdk-s3'
