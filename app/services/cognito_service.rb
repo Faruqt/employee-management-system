@@ -79,6 +79,18 @@ class CognitoService
     raise
   end
 
+  # Revoke Token
+  def revoke_token(access_token)
+    response = @client.global_sign_out({
+        access_token: access_token
+    })
+    Rails.logger.info("Token revoked successfully")
+    response
+  rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
+    Rails.logger.error("Error revoking token: #{e.message}")
+    raise
+  end
+
   private
 
   def generate_secret_hash(username)
