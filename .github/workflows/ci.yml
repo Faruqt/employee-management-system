@@ -50,6 +50,9 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
+      - name: Stage changes
+        run: git add '**/*.rb'
+
       - name: Lint code for consistent style
         run: |
           echo "Running Rubocop"
