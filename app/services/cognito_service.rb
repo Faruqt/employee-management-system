@@ -10,23 +10,29 @@ class CognitoService
   end
 
   # Sign Up a User
-  def sign_up(email, password)
-    Rails.logger.info("Signing up user with email: #{email}")
-    response = @client.sign_up({
-      client_id: @app_client_id,
-      username: email,
-      password: password,
-      user_attributes: [
-        { name: "email", value: email }
-      ],
-      secret_hash: generate_secret_hash(email)
+  def register_user(email, password)
+    Rails.logger.info("Attempting to create user with email: #{email}")
+
+    # Create the user in Cognito
+    response = @client.admin_create_user({
+        user_pool_id: @user_pool_id,
+        username: email,
+        temporary_password: password,
+        user_attributes: [
+            {
+                name: "email",
+                value: email
+            }
+        ]
     })
-    Rails.logger.info("Sign up successful for email: #{email}")
+
+    Rails.logger.info("Sign up successful for email: #{email}, User created with status: #{response.status}")  
+
     response
-  rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
-    Rails.logger.error("Error signing up user: #{e.message}")
-    raise
-  end
+    rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
+        Rails.logger.error("Error signing up user with email: #{email}. Error: #{e.message}")
+        raise
+    end
 
   # Authenticate a User (Sign In)
   def authenticate(email, password)
