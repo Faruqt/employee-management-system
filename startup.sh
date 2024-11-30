@@ -9,5 +9,8 @@ echo "Checking and applying database migrations..."
 # Run database migrations
 bundle exec rails db:migrate || echo "Database migrations applied."
 
+# Remove the server PID file if it exists
+rm -f /rails/tmp/pids/server.pid
+
 # Start the Rails server
 ./bin/rails server
