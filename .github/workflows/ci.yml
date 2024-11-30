@@ -50,14 +50,14 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
-      - name: Stage changes
-        run: git add '**/*.rb'
-
       - name: Lint code for consistent style
         run: |
           echo "Running Rubocop"
           bundle exec rubocop -a
           echo "Rubocop auto-correction applied"
+
+      - name: Stage changes
+        run: git add '**/*.rb'
 
       - name: Commit formatted changes
         uses: stefanzweifel/git-auto-commit-action@v4
@@ -66,31 +66,5 @@ jobs:
           file_pattern: '**/*.rb'
 
   test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Install packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl libjemalloc2 libvips sqlite3
-
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
-
-      - name: Run tests
-        env:
-          RAILS_ENV: test
-          # REDIS_URL: redis://localhost:6379/0
-        run: bin/rails db:test:prepare test test:system
-
-      - name: Keep screenshots from failed system tests
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: screenshots
-          path: ${{ github.workspace }}/tmp/screenshots
-          if-no-files-found: ignore
+    needs: [scan_ruby, scan_js, lint]
+    uses: ./.github/workflows/test.yml

@@ -22,8 +22,6 @@ services:
       container_name: shift-management-app-db
       image: postgres:13.3-alpine
       restart: "unless-stopped"
-      env_file:
-        - .env
       volumes:
         - postgres_data:/var/lib/postgresql/data
       ports:

@@ -39,8 +39,9 @@ development:
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
-  adapter: sqlite3
-  database: ":memory:"
-  pool: 5
-  timeout: 5000
-
+  <<: *default
+  database: shift-management-app-db-test
+  username: platform_user_test
+  password: test_db_platform
+  port: 5432
+  host: postgres-test

@@ -1,0 +1,37 @@
+ARG RUBY_VERSION=3.3.5
+FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
+
+WORKDIR /rails
+
+# Install necessary dependencies for testing
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 \
+    chromium libgdk-pixbuf2.0-0 && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+# Set testing environment
+ENV RAILS_ENV="test" \
+    BUNDLE_PATH="/usr/local/bundle" \
+    BUNDLE_WITHOUT="development"
+
+# Install packages needed for tests (e.g., testing gems)
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y build-essential libpq-dev git pkg-config && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+# Install application gems
+COPY Gemfile Gemfile.lock ./
+RUN bundle install && \
+    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git
+
+# Copy application code
+COPY . .
+
+# Precompile assets if needed for tests (optional)
+RUN bundle exec bootsnap precompile app/ lib/
+
+# Expose any necessary test ports
+EXPOSE 3000
+
+# run the startup script "startupTest.sh"
+CMD ["/bin/bash", "startupTest.sh"]
