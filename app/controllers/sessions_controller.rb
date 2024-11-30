@@ -54,7 +54,9 @@ class SessionsController < ApplicationController
     end
 
     # get the access token from the header
-    access_token = request.headers["Authorization"].split(" ").last
+    access_token = request.headers["Authorization"].split(" ")
+    # check length of access token
+    access_token = access_token.length > 1 ? access_token[1] : nil
     unless access_token
       render json: { message: "Missing Authorization Header" }, status: :unauthorized
       return
@@ -82,7 +84,7 @@ class SessionsController < ApplicationController
 
   # Ensure email and password are provided
   def check_params
-    unless params[:email] && params[:password]
+    unless params[:email] || params[:password]
       render json: { error: "Email and password are required" }, status: :bad_request
       return
     end
