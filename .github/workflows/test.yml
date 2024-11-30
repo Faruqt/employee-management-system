@@ -1,4 +1,4 @@
-name: CI
+name: Test
 
 on:
   pull_request:
@@ -9,41 +9,10 @@ jobs:
   docker:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:13.3-alpine
-        ports:
-          - 5436:5432
-        env:
-          POSTGRES_USER: platform_user_test
-          POSTGRES_PASSWORD: test_db_platform
-          POSTGRES_DB: shift-management-app-db-test
-        options: --health-cmd="pg_isready -U platform_user_test" --health-interval=10s --health-timeout=5s --health-retries=3
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Docker and Docker Compose
+      - name: Run Tests in Docker Containers
         run: |
-          sudo apt-get update
-          sudo apt-get install -y docker.io docker-compose
-
-      - name: Build and Start Containers with Docker Compose for Test
-        run: |
-          docker-compose -f docker-compose.test.yml up -d
-
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          docker exec shift-management-app-db-test sh -c 'until pg_isready -U platform_user_test; do echo waiting for db; sleep 2; done;'
-
-      - name: Run Tests Inside Docker
-        run: |
-          docker exec shift-management-system-test bin/rails db:create
-          docker exec shift-management-system-test bin/rails db:schema:load
-          docker exec shift-management-system-test bin/rails db:seed
-          docker exec shift-management-system-test bin/rails test
-
-      - name: Stop Docker Containers
-        run: |
-          docker-compose -f docker-compose.test.yml down
+          bash ./runTests.sh
