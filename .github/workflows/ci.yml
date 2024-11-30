@@ -56,6 +56,11 @@ jobs:
           bundle exec rubocop -a
           echo "Rubocop auto-correction applied"
 
+      - name: Check for changes
+        run: |
+          echo "Checking for changes"
+          git status
+          
       - name: Stage changes
         run: git add '**/*.rb'
 
