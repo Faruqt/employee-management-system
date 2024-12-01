@@ -11,4 +11,13 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "welcome#index"
+
+  # Defines the routes for the sessions controller
+  post "login" => "sessions#create"
+  delete "logout" => "sessions#destroy"
+
+  # Defines the routes for the registration controller
+  post "register" => "registrations#create"
+
+  # resources :users, only: %i[create show update]
 end
