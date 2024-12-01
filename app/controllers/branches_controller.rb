@@ -65,8 +65,6 @@ class BranchesController < ApplicationController
     address = params[:address]
     organization_id = params[:organization_id]
 
-    puts "name: #{name} address: #{address} organization_id: #{organization_id}"
-
     if name.blank?
       render json: { error: "Branch name is required" }, status: :bad_request
       return
@@ -137,7 +135,8 @@ class BranchesController < ApplicationController
       Rails.logger.info("Branch updated successfully")
       render json: { branch: branch.public_attributes, message: "Branch updated successfully" }, status: :ok
     rescue ActiveRecord::RecordInvalid => e
-      render json: { error: e.message }, status: :bad_request
+      Rails.logger.error("Updating branch failed: #{e.message}")
+      render json: { error: "An error occurred while updating branch, please try again" }, status: :bad_request
     rescue StandardError => e
       Rails.logger.error("Unexpected error: #{e.message}")
       render json: { error: "An error occurred while updating branch, please try again" }, status: :internal_server_error
@@ -165,6 +164,10 @@ class BranchesController < ApplicationController
 
       Rails.logger.info("Branch #{id} deleted successfully")
       render json: { message: "Branch #{branch.name} deleted successfully" }, status: :ok
+
+    rescue ActiveRecord::RecordNotDestroyed => e
+      Rails.logger.error("Error deleting branch: #{e.message}")
+      render json: { error: "An error occurred while deleting branch, please try again" }, status: :internal_server_error
     rescue StandardError => e
       Rails.logger.error("Unexpected error: #{e.message}")
       render json: { error: "An error occurred while deleting branch, please try again" }, status: :internal_server_error
