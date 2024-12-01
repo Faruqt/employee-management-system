@@ -12,6 +12,9 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "welcome#index"
 
+  # Defines the routes for the organizations controller using RESTful routes
+  resources :organizations, only: [:index, :show, :create, :update, :destroy]
+
   # Defines the routes for the sessions controller
   post "login" => "sessions#create"
   delete "logout" => "sessions#destroy"
