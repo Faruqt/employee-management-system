@@ -12,12 +12,12 @@ one:
   shift_code: MyString
 
 two:
-  first_name: MyString
-  last_name: MyString
-  email: MyString
-  telephone: MyString
-  is_active: false
-  qr_code_url: MyString
-  contract_code: MyString
-  tax_code: MyString
-  shift_code: MyString
+  first_name: MyString2
+  last_name: MyString2
+  email: MyString2
+  telephone: MyString2
+  is_active: false2
+  qr_code_url: MyString2
+  contract_code: MyString2
+  tax_code: MyString2
+  shift_code: MyString2

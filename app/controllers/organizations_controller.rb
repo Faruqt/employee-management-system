@@ -123,11 +123,11 @@ class OrganizationsController < ApplicationController
       render json: { error: "Failed to update organization, please try again" }, status: :internal_server_error
     rescue StandardError => e
       Rails.logger.error("Unexpected error: #{e.message}")
-      render json: { error: "An unexpected error occurred" }, status: :internal_server_error
+      render json: { error: "Failed to update organization, please try again" }, status: :internal_server_error
     end
   end
 
-
+  # DELETE /organizations/:id
   def destroy
     id = params[:id]
 
