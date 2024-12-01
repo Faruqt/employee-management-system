@@ -30,7 +30,7 @@ class RolesController < ApplicationController
       }, status: :ok
     rescue StandardError => e
       Rails.logger.error("Unexpected error: #{e.message}")
-      render json: { error: "An error occurred while fetching roles, please try again"}, status: :internal_server_error
+      render json: { error: "An error occurred while fetching roles, please try again" }, status: :internal_server_error
     end
   end
 
@@ -72,7 +72,7 @@ class RolesController < ApplicationController
     if symbol.blank?
       render json: { error: "Symbol is required" }, status: :bad_request
       return
-    end 
+    end
 
     if area_id.blank?
       render json: { error: "Area ID is required" }, status: :bad_request
@@ -102,7 +102,7 @@ class RolesController < ApplicationController
       render json: { role: role.public_attributes, message: "Role created successfully" }, status: :created
     rescue ActiveRecord::RecordInvalid => e
       Rails.logger.error("An error occured while creating role : #{e.message}")
-      render json: { error: "An error occurred while creating role, please try again"}, status: :bad_request
+      render json: { error: "An error occurred while creating role, please try again" }, status: :bad_request
     rescue StandardError => e
       Rails.logger.error("Unexpected error: #{e.message}")
       render json: { error: "An error occurred while creating role, please try again" }, status: :internal_server_error
@@ -148,13 +148,13 @@ class RolesController < ApplicationController
 
       # Update the role
       role.update!(name: name, symbol: symbol)
-      
+
       Rails.logger.info("Role #{id} updated successfully")
       render json: { role: role.public_attributes, message: "Role updated successfully" }, status: :ok
 
     rescue ActiveRecord::RecordInvalid => e
       Rails.logger.error("An error occured while updating role : #{e.message}")
-      render json: { error: "An error occurred while updating role, please try again"}, status: :bad_request
+      render json: { error: "An error occurred while updating role, please try again" }, status: :bad_request
     rescue StandardError => e
       Rails.logger.error("Unexpected error: #{e.message}")
       render json: { error: "An error occurred while updating role, please try again" }, status: :internal_server_error

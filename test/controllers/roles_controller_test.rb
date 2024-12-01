@@ -68,7 +68,7 @@ class RolesControllerTest < ActionDispatch::IntegrationTest
   test "should return role by ID" do
     get role_url(@role1), as: :json
     assert_response :success
-  
+
     response_data = JSON.parse(@response.body)
     role = response_data["role"]
 
@@ -109,7 +109,7 @@ class RolesControllerTest < ActionDispatch::IntegrationTest
     assert JSON.parse(@response.body)["role"]["created_at"]
     assert JSON.parse(@response.body)["role"]["updated_at"]
     assert_equal "Role created successfully", JSON.parse(@response.body)["message"]
-  end 
+  end
 
   test "should return error for missing role name" do
     # Test with missing role name
@@ -129,7 +129,7 @@ class RolesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Symbol is required", response_data["error"]
   end
 
-  test "should return error if name already exists in that area" do 
+  test "should return error if name already exists in that area" do
     # Test with existing role name
     post roles_url, params: { name: "Role One", symbol: "Role Four Symbol", area_id: @area1.id }, as: :json
     assert_response :bad_request
@@ -151,8 +151,6 @@ class RolesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Role Four Symbol", JSON.parse(@response.body)["role"]["symbol"]
     assert_equal @area2.id, JSON.parse(@response.body)["role"]["area_id"]
     assert JSON.parse(@response.body)["role"]["created_at"]
-
-
   end
 
   test "should update role with valid parameters" do
@@ -215,7 +213,7 @@ class RolesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Symbol is required", response_data["error"]
   end
 
-  test "should return error if update fails due to internal server error" do 
+  test "should return error if update fails due to internal server error" do
     # Simulate an unexpected error by stubbing the `update!` method to raise an error
     Role.any_instance.stubs(:update!).raises(StandardError)
     patch role_url(@role1), params: { name: "Role One Updated", symbol: "Role One Symbol Updated" }, as: :json
@@ -252,5 +250,5 @@ class RolesControllerTest < ActionDispatch::IntegrationTest
 
     response_data = JSON.parse(@response.body)
     assert_equal "An error occurred while deleting role, please try again", response_data["error"]
-  end   
+  end
 end
