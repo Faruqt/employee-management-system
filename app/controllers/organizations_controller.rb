@@ -79,9 +79,14 @@ class OrganizationsController < ApplicationController
       end
 
       organization = Organization.create!(name: name, address: address)
+
+      Rails.logger.info("Organization created successfully")
       render json: { organization: organization }, status: :created
     rescue ActiveRecord::RecordInvalid => e
       render json: { error: e.message }, status: :bad_request
+    rescue StandardError => e
+      Rails.logger.error("Unexpected error: #{e.message}")
+      render json: { error: "An error occurred while creating organization, please try again" }, status: :internal_server_error
     end
   end
 
@@ -117,7 +122,9 @@ class OrganizationsController < ApplicationController
       # Update the organization
       organization.update!(name: name, address: address)
 
-      render json: { organization: organization }, status: :ok
+      Rails.logger.info("Organization updated successfully")
+
+      render json: { organization: organization, message: "Organization updated successfully" }, status: :ok
     rescue ActiveRecord::RecordInvalid => e
       Rails.logger.error("Error updating organization: #{e.message}")
       render json: { error: "Failed to update organization, please try again" }, status: :internal_server_error
@@ -146,6 +153,7 @@ class OrganizationsController < ApplicationController
 
       organization.destroy
 
+      Rails.logger.info("Organization #{id} deleted successfully")
       render json: { message: "Organization #{organization.name} deleted successfully" }, status: :ok
     rescue ActiveRecord::RecordNotDestroyed => e
       Rails.logger.error("Error deleting organization: #{e.message}")
