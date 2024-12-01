@@ -161,6 +161,21 @@ class AreasController < ApplicationController
         return
       end
 
+      # check if area is attached to any branch
+      if area.branches.any?
+        Rails.logger.error("Area has branches, cannot delete")
+        render json: { error: "Area has branches, detach from branches and then try again" }, status: :bad_request
+        return
+      end
+
+      # check if area has any attached role
+      if area.roles.any?
+        Rails.logger.error("Area has roles, cannot delete")
+        render json: { error: "Area has roles, delete roles and then try again" }, status: :bad_request
+        return
+      end
+      
+      # delete the area
       area.destroy
 
       Rails.logger.info("Area #{id} deleted successfully")

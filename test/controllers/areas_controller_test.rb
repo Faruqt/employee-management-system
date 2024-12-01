@@ -3,9 +3,11 @@ require "test_helper"
 class AreasControllerTest < ActionDispatch::IntegrationTest
   def setup
     # Create test data
+    @organization = Organization.create!(name: "Organization One", address: "Address One")
     @area1 = Area.create!(name: "Area One", color: "Color One")
     @area2 = Area.create!(name: "Area Two", color: "Color Two")
     @area3 = Area.create!(name: "Area Three", color: "Color Three")
+    @branch1 = Branch.create!(name: "Branch One", address: "Branch Address One", organization_id: @organization.id)
   end
 
   test "should return paginated areas" do
@@ -189,6 +191,17 @@ class AreasControllerTest < ActionDispatch::IntegrationTest
 
     response_data = JSON.parse(@response.body)
     assert_equal "Area not found", response_data["error"]
+  end
+
+  test "should return error when area has branches attached" do
+    # Attach the area to a branch
+    @branch1.areas << @area1
+
+    delete area_url(@area1), as: :json
+    assert_response :bad_request
+
+    response_data = JSON.parse(@response.body)
+    assert_equal "Area has branches, detach from branches and then try again", response_data["error"]
   end
 
   test "should return error if delete fails due to internal server error" do
