@@ -73,22 +73,22 @@ class OrganizationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return organization details when valid ID is provided" do
-    get organization_url(@org1.id)
+    get organization_url(@org1.id), as: :json
 
     assert_response :success
-    response_body = JSON.parse(response.body)
-    assert_equal @org1.id, response_body["organization"]["id"]
-    assert_equal @org1.name, response_body["organization"]["name"]
-    assert_equal @org1.address, response_body["organization"]["address"]
+    response_data = JSON.parse(response.body)
+    assert_equal @org1.id, response_data["organization"]["id"]
+    assert_equal @org1.name, response_data["organization"]["name"]
+    assert_equal @org1.address, response_data["organization"]["address"]
   end
 
   test "should return 404 not found if organization does not exist" do
     non_existent_id = SecureRandom.uuid
-    get organization_url(non_existent_id)
+    get organization_url(non_existent_id), as: :json
 
     assert_response :not_found
-    response_body = JSON.parse(response.body)
-    assert_equal "Organization not found", response_body["error"]
+    response_data = JSON.parse(response.body)
+    assert_equal "Organization not found", response_data["error"]
   end
 
   test "should return 500 internal server error on unexpected error" do
@@ -98,8 +98,8 @@ class OrganizationsControllerTest < ActionDispatch::IntegrationTest
 
     get organization_url(@org1.id), as: :json
     assert_response :internal_server_error
-    response_body = JSON.parse(response.body)
-    assert_equal "An error occurred while fetching organization, please try again", response_body["error"]
+    response_data = JSON.parse(response.body)
+    assert_equal "An error occurred while fetching organization, please try again", response_data["error"]
   end
 
   test "should create organization with valid parameters" do
