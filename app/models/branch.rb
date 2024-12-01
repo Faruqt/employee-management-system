@@ -9,4 +9,6 @@ class Branch < ApplicationRecord
             updated_at: updated_at.strftime(Constants::DATETIME_FORMAT)
         }
     end
+
+    has_and_belongs_to_many :areas, join_table: :areas_branches
 end
