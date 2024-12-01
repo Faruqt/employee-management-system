@@ -1,7 +1,6 @@
 require "test_helper"
 
 class WelcomeControllerTest < ActionDispatch::IntegrationTest
-
   test "user can reach base route succesfully" do
     assert ActiveRecord::Base.connection.active?, "Database connection failed"
 
