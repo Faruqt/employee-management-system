@@ -7,6 +7,7 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
     @org2 = Organization.create!(name: "Organization Two", address: "Address Two")
     @branch1 = Branch.create!(name: "Branch-Organization 1", address: "Address One", organization_id: @org1.id)
     @branch2 = Branch.create!(name: "Branch-Organization 2", address: "Address Two", organization_id: @org2.id)
+    @area = Area.create!(name: "Area One", color: "Red")
   end
 
   test "should return paginated branches" do
@@ -190,6 +191,17 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
 
     response_data = JSON.parse(@response.body)
     assert_equal "Branch not found", response_data["error"]
+  end
+
+  test "should return error if branch has areas attached during delete" do
+    # Attach an area to the branch
+    @branch1.areas << @area
+
+    delete branch_url(@branch1), as: :json
+    assert_response :bad_request
+
+    response_data = JSON.parse(@response.body)
+    assert_equal "Branch has areas, delete areas and then try again", response_data["error"]
   end
 
   test "should return error if delete fails due to internal server error" do

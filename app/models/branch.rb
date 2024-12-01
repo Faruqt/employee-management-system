@@ -1,4 +1,5 @@
 class Branch < ApplicationRecord
+    # Custom method for public attributes
     def public_attributes
         {
             id: id,
@@ -10,5 +11,9 @@ class Branch < ApplicationRecord
         }
     end
 
+    # Many-to-Many relationship with Areas
     has_and_belongs_to_many :areas, join_table: :areas_branches
+
+    # Association with Organization
+    belongs_to :organization
 end

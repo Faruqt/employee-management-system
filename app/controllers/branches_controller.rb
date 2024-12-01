@@ -64,6 +64,7 @@ class BranchesController < ApplicationController
     name = params[:name]
     address = params[:address]
     organization_id = params[:organization_id]
+    areas_ids = params[:areas_ids]
 
     if name.blank?
       render json: { error: "Branch name is required" }, status: :bad_request
@@ -76,6 +77,19 @@ class BranchesController < ApplicationController
     end
 
     begin
+
+      if areas_ids
+        # check that all area_ids are valid
+        areas_ids.each do |area_id|
+          area = Area.find_by(id: area_id)
+          unless area
+            Rails.logger.error("Area not found with ID: #{area_id}")
+            render json: { error: "Area with id #{area_id} not found" }, status: :not_found
+            return
+          end
+        end
+      end
+      
       # check if branch name already exists in the organization
       branch = Branch.find_by(name: name, organization_id: organization_id)
       if branch
@@ -84,7 +98,16 @@ class BranchesController < ApplicationController
         return
       end
 
+      # create the branch
       branch = Branch.create!(name: name, address: address, organization_id: organization_id)
+
+      # attach the branch to the area if area_id is provided
+      if areas_ids
+        areas_ids.each do |area_id|
+          area = Area.find_by(id: area_id)
+          branch.areas << area
+        end
+      end
 
       Rails.logger.info("Branch created successfully")
       render json: { branch: branch.public_attributes, message: "Branch created successfully" }, status: :created
@@ -102,6 +125,7 @@ class BranchesController < ApplicationController
     id = params[:id]
     name = params[:name]
     address = params[:address]
+    areas_ids = params[:areas_ids]
 
     if id.blank?
       render json: { error: "Branch ID is required" }, status: :bad_request
@@ -114,6 +138,18 @@ class BranchesController < ApplicationController
     end
 
     begin
+      if areas_ids
+        # check that all area_ids are valid
+        areas_ids.each do |area_id|
+          area = Area.find_by(id: area_id)
+          unless area
+            Rails.logger.error("Area not found with ID: #{area_id}")
+            render json: { error: "Area with id #{area_id} not found" }, status: :not_found
+            return
+          end
+        end
+      end
+
       branch = Branch.find_by(id: id)
       unless branch
         Rails.logger.error("Branch not found with ID: #{id}")
@@ -131,6 +167,18 @@ class BranchesController < ApplicationController
 
       # Update the branch
       branch.update!(name: name, address: address)
+
+      # attach the branch to the areas if areas_ids is provided
+      if areas_ids
+        # clear existing areas
+        branch.areas.clear
+
+        # attach the branch to the areas
+        areas_ids.each do |area_id|
+          area = Area.find_by(id: area_id)
+          branch.areas << area
+        end
+      end
 
       Rails.logger.info("Branch updated successfully")
       render json: { branch: branch.public_attributes, message: "Branch updated successfully" }, status: :ok
@@ -157,6 +205,13 @@ class BranchesController < ApplicationController
       unless branch
         Rails.logger.error("Branch not found with ID: #{id}")
         render json: { error: "Branch not found" }, status: :not_found
+        return
+      end
+
+      # check if branch has any attached areas
+      if branch.areas.any?
+        Rails.logger.error("Branch has areas, cannot delete")
+        render json: { error: "Branch has areas, delete areas and then try again" }, status: :bad_request
         return
       end
 
