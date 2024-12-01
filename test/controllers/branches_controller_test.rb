@@ -100,9 +100,6 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
     post branches_url, params: { name: "Branch-Organization 3", address: "Address Three", organization_id: @org1.id }, as: :json
     assert_response :created
 
-    puts "Response: "
-    puts @response.body
-
     assert JSON.parse(@response.body)["branch"]
     assert JSON.parse(@response.body)["branch"]["id"]
     assert_equal "Branch-Organization 3", JSON.parse(@response.body)["branch"]["name"]
