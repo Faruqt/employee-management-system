@@ -30,7 +30,7 @@ class BranchesController < ApplicationController
       }, status: :ok
     rescue StandardError => e
       Rails.logger.error("Unexpected error: #{e.message}")
-      render json: { error: "An error occurred while fetching branches, please try again"}, status: :internal_server_error
+      render json: { error: "An error occurred while fetching branches, please try again" }, status: :internal_server_error
     end
   end
 
