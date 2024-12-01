@@ -6,6 +6,7 @@ class OrganizationsControllerTest < ActionDispatch::IntegrationTest
     @org1 = Organization.create!(name: "Organization One", address: "Address One")
     @org2 = Organization.create!(name: "Organization Two", address: "Address Two")
     @org3 = Organization.create!(name: "Organization Three", address: "Address Three")
+    @branch1 = Branch.create!(name: "Branch One", address: "Branch Address One", organization: @org1)
   end
 
   test "should return paginated organizations" do
@@ -183,12 +184,12 @@ class OrganizationsControllerTest < ActionDispatch::IntegrationTest
 
   test "should delete organization successfully" do
     assert_difference("Organization.count", -1) do
-      delete organization_url(@org1.id), as: :json
+      delete organization_url(@org3.id), as: :json
     end
 
     assert_response :ok
     response_data = JSON.parse(@response.body)
-    assert_equal "Organization #{@org1.name} deleted successfully", response_data["message"]
+    assert_equal "Organization #{@org3.name} deleted successfully", response_data["message"]
   end
 
   test "should return error if organization is not found" do
@@ -200,11 +201,20 @@ class OrganizationsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Organization not found", response_data["error"]
   end
 
+  test "should return error if deleting an organization with branches" do
+    # Test when trying to delete an organization with branches
+    delete organization_url(@org1.id), as: :json
+
+    assert_response :bad_request
+    response_data = JSON.parse(@response.body)
+    assert_equal "Organization has branches, delete branches and then try again", response_data["error"]
+  end
+
   test "should return error if delete fails due to internal server error" do
     # Simulate error by stubbing the destroy method to raise an exception
     Organization.any_instance.stubs(:destroy).raises(ActiveRecord::RecordNotDestroyed.new("Failed to delete"))
 
-    delete organization_url(@org1.id), as: :json
+    delete organization_url(@org2.id), as: :json
 
     assert_response :internal_server_error
     response_data = JSON.parse(@response.body)

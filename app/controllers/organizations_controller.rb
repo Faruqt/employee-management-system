@@ -151,6 +151,13 @@ class OrganizationsController < ApplicationController
         return
       end
 
+      # check if organization has any branches
+      if organization.branches.any?
+        Rails.logger.error("Organization has branches, cannot delete")
+        render json: { error: "Organization has branches, delete branches and then try again" }, status: :bad_request
+        return
+      end
+
       organization.destroy
 
       Rails.logger.info("Organization #{id} deleted successfully")
