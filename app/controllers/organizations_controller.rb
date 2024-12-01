@@ -30,7 +30,7 @@ class OrganizationsController < ApplicationController
       }, status: :ok
     rescue StandardError => e
       Rails.logger.error("Unexpected error: #{e.message}")
-      render json: { error: "An error occurred while fetching organizations, please try again"}, status: :internal_server_error
+      render json: { error: "An error occurred while fetching organizations, please try again" }, status: :internal_server_error
     end
   end
 
@@ -69,7 +69,7 @@ class OrganizationsController < ApplicationController
       return
     end
 
-    begin 
+    begin
       # Check if organization already exists
       organization = Organization.find_by(name: name)
       if organization

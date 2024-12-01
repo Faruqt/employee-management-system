@@ -26,7 +26,7 @@ class CognitoService
         ]
     })
 
-    Rails.logger.info("Sign up successful for email: #{email}, User created with status: #{response.status}")  
+    Rails.logger.info("Sign up successful for email: #{email}, User created with status: #{response.status}")
 
     response
     rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e

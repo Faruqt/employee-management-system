@@ -13,7 +13,7 @@ Rails.application.routes.draw do
   root "welcome#index"
 
   # Defines the routes for the organizations controller using RESTful routes
-  resources :organizations, only: [:index, :show, :create, :update, :destroy]
+  resources :organizations, only: [ :index, :show, :create, :update, :destroy ]
 
   # Defines the routes for the branches controller using RESTful routes
   resources :branches, only: [:index, :show, :create, :update, :destroy]

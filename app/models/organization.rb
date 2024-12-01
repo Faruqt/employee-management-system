@@ -1,5 +1,4 @@
 class Organization < ApplicationRecord
-
     def public_attributes
         {
             id: id,

@@ -92,7 +92,6 @@ class OrganizationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return 500 internal server error on unexpected error" do
-
     # Simulate an unexpected error by stubbing the `find_by` method to raise an error
     Organization.stubs(:find_by).raises("Unexpected Error")
 
@@ -183,7 +182,7 @@ class OrganizationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should delete organization successfully" do
-    assert_difference('Organization.count', -1) do
+    assert_difference("Organization.count", -1) do
       delete organization_url(@org1.id), as: :json
     end
 
@@ -211,5 +210,4 @@ class OrganizationsControllerTest < ActionDispatch::IntegrationTest
     response_data = JSON.parse(@response.body)
     assert_equal "Failed to delete organization, please try again", response_data["error"]
   end
-
 end
