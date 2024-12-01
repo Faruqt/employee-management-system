@@ -64,3 +64,6 @@ end
 #
 gem "aws-sdk-cognitoidentityprovider"
 gem "aws-sdk-s3"
+
+# Use the Kaminari gem for pagination
+gem 'kaminari'
