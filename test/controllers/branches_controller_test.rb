@@ -85,7 +85,6 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return 500 internal server error on unexpected error" do
-
     # Simulate an unexpected error by stubbing the `find_by` method to raise an error
     Branch.stubs(:find_by).raises("Unexpected Error")
 
@@ -110,7 +109,6 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
     assert JSON.parse(@response.body)["branch"]["organization_id"]
     assert_equal @org1.id, JSON.parse(@response.body)["branch"]["organization_id"]
     assert_equal "Branch created successfully", JSON.parse(@response.body)["message"]
-
   end
 
   test "should return error for missing branch name" do
@@ -151,7 +149,7 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Branch name is required", JSON.parse(@response.body)["error"]
   end
 
-  test "should return error if branch does not exist during update" do 
+  test "should return error if branch does not exist during update" do
     non_existent_id = SecureRandom.uuid
     patch branch_url(non_existent_id), params: { name: "Branch-Organization 1 Updated", address: "Address One Updated" }, as: :json
     assert_response :not_found
@@ -180,7 +178,7 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should delete branch successfully" do
-    assert_difference('Branch.count', -1) do
+    assert_difference("Branch.count", -1) do
       delete branch_url(@branch1), as: :json
     end
 

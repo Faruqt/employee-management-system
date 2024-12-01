@@ -16,7 +16,7 @@ Rails.application.routes.draw do
   resources :organizations, only: [ :index, :show, :create, :update, :destroy ]
 
   # Defines the routes for the branches controller using RESTful routes
-  resources :branches, only: [:index, :show, :create, :update, :destroy]
+  resources :branches, only: [ :index, :show, :create, :update, :destroy ]
 
   # Defines the routes for the sessions controller
   post "login" => "sessions#create"
