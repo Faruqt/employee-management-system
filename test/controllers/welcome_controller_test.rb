@@ -1,11 +1,7 @@
 require "test_helper"
 
 class WelcomeControllerTest < ActionDispatch::IntegrationTest
-  setup do
-    puts "Setting up before each test"
-    # You can set up things here, such as database records or other resources.
-  end
-  
+
   test "user can reach base route succesfully" do
     assert ActiveRecord::Base.connection.active?, "Database connection failed"
 
