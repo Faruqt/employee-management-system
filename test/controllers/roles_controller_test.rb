@@ -252,13 +252,5 @@ class RolesControllerTest < ActionDispatch::IntegrationTest
 
     response_data = JSON.parse(@response.body)
     assert_equal "An error occurred while deleting role, please try again", response_data["error"]
-  end
-
-
-
-
-
-
-    
-    
+  end   
 end

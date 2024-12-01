@@ -178,6 +178,8 @@ class RolesController < ApplicationController
         return
       end
 
+      # TODO: check if role is attached to any employee
+      
       role.destroy
 
       Rails.logger.info("Role #{id} deleted successfully")
