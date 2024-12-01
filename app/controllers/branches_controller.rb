@@ -89,7 +89,7 @@ class BranchesController < ApplicationController
       Rails.logger.info("Branch created successfully")
       render json: { branch: branch.public_attributes, message: "Branch created successfully" }, status: :created
     rescue ActiveRecord::RecordInvalid => e
-      Rails.logger.error("Validation error: #{e.message}")
+      Rails.logger.error("An error occurred while creating branch: #{e.message}")
       render json: { error: "An error occurred while creating branch, please try again" }, status: :bad_request
     rescue StandardError => e
       Rails.logger.error("Unexpected error: #{e.message}")
