@@ -19,7 +19,7 @@ Rails.application.routes.draw do
   resources :branches, only: [ :index, :show, :create, :update, :destroy ]
 
   # Defines the routes for the areas controller using RESTful routes
-  resources :areas, only: [:index, :show, :create, :update, :destroy]
+  resources :areas, only: [ :index, :show, :create, :update, :destroy ]
 
   # Defines the routes for the roles controller using RESTful routes
   resources :roles, only: [:index, :show, :create, :update, :destroy]

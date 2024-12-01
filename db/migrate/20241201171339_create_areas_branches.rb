@@ -8,6 +8,6 @@ class CreateAreasBranches < ActiveRecord::Migration[8.0]
     end
 
     # Add a unique index to enforce the many-to-many relationship and prevent duplicates
-    add_index :areas_branches, [:area_id, :branch_id], unique: true
+    add_index :areas_branches, [ :area_id, :branch_id ], unique: true
   end
 end

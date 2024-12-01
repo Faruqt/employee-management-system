@@ -85,7 +85,7 @@ class AreasControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return 500 internal server error on unexpected error" do
-    #Simulate unexpected error by stubbing the Area.find_by method to raise an error
+    # Simulate unexpected error by stubbing the Area.find_by method to raise an error
     Area.stubs(:find_by).raises(StandardError.new("Unexpected error"))
 
     get area_url(@area1), as: :json
@@ -174,7 +174,7 @@ class AreasControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should delete area successfully" do
-    assert_difference('Area.count', -1) do
+    assert_difference("Area.count", -1) do
       delete area_url(@area1), as: :json
     end
 

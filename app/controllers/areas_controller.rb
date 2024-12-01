@@ -30,7 +30,7 @@ class AreasController < ApplicationController
       }, status: :ok
     rescue StandardError => e
       Rails.logger.error("Unexpected error: #{e.message}")
-      render json: { error: "An error occurred while fetching areas, please try again"}, status: :internal_server_error
+      render json: { error: "An error occurred while fetching areas, please try again" }, status: :internal_server_error
     end
   end
 
@@ -91,8 +91,6 @@ class AreasController < ApplicationController
       Rails.logger.error("Unexpected error: #{e.message}")
       render json: { error: "An error occurred while creating area, please try again" }, status: :internal_server_error
     end
-
-
   end
 
   # PATCH /areas/:id
