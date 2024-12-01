@@ -91,6 +91,7 @@ class AreasController < ApplicationController
       Rails.logger.error("Unexpected error: #{e.message}")
       render json: { error: "An error occurred while creating area, please try again" }, status: :internal_server_error
     end
+
   end
 
   # PATCH /areas/:id
