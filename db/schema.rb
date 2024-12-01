@@ -10,10 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_12_01_003359) do
+ActiveRecord::Schema[8.0].define(version: 2024_12_01_134935) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
+
+  create_table "branches", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name"
+    t.string "address"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "organization_id"
+    t.index ["organization_id"], name: "index_branches_on_organization_id"
+  end
 
   create_table "employees", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "first_name"
@@ -41,4 +50,6 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_01_003359) do
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_organizations_on_name", unique: true
   end
+
+  add_foreign_key "branches", "organizations"
 end
