@@ -26,12 +26,12 @@ class CognitoService
         ]
     })
 
-    Rails.logger.info("Sign up successful for email: #{email}, User created with status: #{response.status}")
+    Rails.logger.info("Sign up on cognito successful for email: #{email}}")
 
     response
     rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
-        Rails.logger.error("Error signing up user with email: #{email}. Error: #{e.message}")
-        raise
+      Rails.logger.error("Error signing up user with email: #{email}. Error: #{e.message}")
+      raise e
     end
 
   # Authenticate a User (Sign In)
