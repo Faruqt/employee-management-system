@@ -111,14 +111,19 @@ class SessionsController < ApplicationController
   end
 
   def handle_cognito_error(error)
-    case error.response.error.code
-    when "UserNotFoundException"
+    # Log the error for debugging purposes
+    Rails.logger.error("Cognito error: #{error.inspect}")
+
+    # Check for specific AWS Cognito error classes
+    case error
+    when Aws::CognitoIdentityProvider::Errors::UserNotFoundException
       render json: { error: "Account does not exist" }, status: :unauthorized
-    when "NotAuthorizedException"
+    when Aws::CognitoIdentityProvider::Errors::NotAuthorizedException
       render json: { error: "Invalid email or password" }, status: :unauthorized
-    when "UserNotConfirmedException"
+    when Aws::CognitoIdentityProvider::Errors::UserNotConfirmedException
       render json: { error: "Account not confirmed" }, status: :unauthorized
     else
+      # For any other unexpected Cognito error, or if error is not related to Cognito
       render json: { error: "An error occurred while logging in, please try again" }, status: :internal_server_error
     end
   end
