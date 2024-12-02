@@ -10,10 +10,27 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_12_01_184746) do
+ActiveRecord::Schema[8.0].define(version: 2024_12_01_225718) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
+
+  create_table "admins", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "first_name"
+    t.string "last_name"
+    t.string "email"
+    t.string "telephone"
+    t.boolean "is_deleted", default: false
+    t.boolean "is_manager", default: false
+    t.boolean "is_director", default: false
+    t.boolean "is_super_admin", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "branch_id"
+    t.uuid "area_id"
+    t.index ["area_id"], name: "index_admins_on_area_id"
+    t.index ["branch_id"], name: "index_admins_on_branch_id"
+  end
 
   create_table "areas", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
@@ -46,14 +63,14 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_01_184746) do
     t.string "last_name"
     t.string "email"
     t.string "telephone"
-    t.boolean "is_active"
+    t.boolean "is_active", default: true
     t.string "qr_code_url"
     t.string "contract_code"
     t.string "tax_code"
     t.string "shift_code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "is_deleted"
+    t.boolean "is_deleted", default: false
     t.date "date_of_birth"
     t.date "contract_start_date"
     t.date "contract_end_date"
@@ -77,6 +94,8 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_01_184746) do
     t.index ["area_id"], name: "index_roles_on_area_id"
   end
 
+  add_foreign_key "admins", "areas"
+  add_foreign_key "admins", "branches"
   add_foreign_key "areas_branches", "areas"
   add_foreign_key "areas_branches", "branches"
   add_foreign_key "branches", "organizations"
