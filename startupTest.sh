@@ -16,5 +16,6 @@ echo "Database migrations applied."
 
 # Run tests
 echo "Running tests..."
-bundle exec rails test
+# Rails will use one worker to run the tests, this will prevent multiple database connections/migrations from running at the same time
+PARALLEL_WORKERS=1 bundle exec rails test
 echo "Tests complete."
