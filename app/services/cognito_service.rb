@@ -53,6 +53,64 @@ class CognitoService
     raise
   end
 
+  # Set new password
+  def set_new_password(email, password, session)
+    Rails.logger.info("Setting new password for email: #{email}")
+
+    response = @client.respond_to_auth_challenge({
+      client_id: @app_client_id,
+      challenge_name: "NEW_PASSWORD_REQUIRED",
+      session: session,
+      challenge_responses: {
+        "USERNAME" => email,
+        "NEW_PASSWORD" => password,
+        "SECRET_HASH"=> generate_secret_hash(email)
+        "USER_ATTRIBUTES" => '{"email": "' + email + '"}'
+      }
+    })
+  
+    Rails.logger.info("New password set for email: #{email}")
+    response
+  rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
+    Rails.logger.error("Error setting new password: #{e.message}")
+    raise
+  end
+
+  # Admin Set Password
+  def admin_set_password(email, password)
+    Rails.logger.info("Admin setting password for email: #{email}")
+
+    response = @client.admin_set_user_password({
+      user_pool_id: @user_pool_id,
+      username: email,
+      password: password,
+      permanent: true
+    })
+
+    Rails.logger.info("Password set for email: #{email}")
+    response
+  rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
+    Rails.logger.error("Error setting password: #{e.message}")
+    raise
+  end
+  
+  # Verify the user's email
+  def verify_email(email)
+    Rails.logger.info("Verifying email for email: #{email}")
+    response = @client.admin_update_user_attributes({
+      user_pool_id: @user_pool_id,
+      username: email,
+      user_attributes: [
+        {"name": "email_verified", "value": "true"}
+      ]
+    })
+    Rails.logger.info("Email verified for email: #{email}")
+    response
+  rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
+    Rails.logger.error("Error verifying email: #{e.message}")
+    raise
+  end
+  
   # Forgot Password
   def forgot_password(email)
     Rails.logger.info("Initiating forgot password for email: #{email}")
@@ -96,6 +154,23 @@ class CognitoService
     Rails.logger.error("Error revoking token: #{e.message}")
     raise
   end
+
+  # Delete User
+  def delete_user(email)
+    Rails.logger.info("Deleting user with email: #{email}")
+
+    response = @client.admin_delete_user({
+      user_pool_id: @user_pool_id,
+      username: email
+    })
+
+    Rails.logger.info("User deleted successfully with email: #{email}")
+    response
+  rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
+    Rails.logger.error("Error deleting user: #{e.message}")
+    raise
+  end
+
 
   private
 
