@@ -1,5 +1,5 @@
 ENV["RAILS_ENV"] ||= "test"
-ENV['AWS_REGION'] = 'some-region'
+ENV["AWS_REGION"] = "some-region"
 require_relative "../config/environment"
 require "rails/test_help"
 require "mocha/minitest"
