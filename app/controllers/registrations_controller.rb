@@ -50,7 +50,7 @@ class RegistrationsController < ApplicationController
   # Get the user class based on the user type
   def user_class_for(user_type)
     case user_type
-    when "employee" then User
+    when "employee" then Employee
     else Admin
     end
   end
@@ -94,7 +94,7 @@ class RegistrationsController < ApplicationController
       tax_code: attributes[:tax_code],
       date_of_birth: attributes[:date_of_birth],
       contract_start_date: attributes[:contract_start_date],
-      contract_end_date: attributes[:contract_end_date]
+      contract_end_date: attributes[:contract_end_date],
     )
   end
 
