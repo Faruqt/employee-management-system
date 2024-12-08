@@ -21,7 +21,6 @@ module ActiveSupport
 
       # Mock the CognitoService initialization to return the mock object
       CognitoService.stubs(:new).returns(@mock_cognito_service)
-
     end
 
     # Add more helper methods to be used by all tests here...
