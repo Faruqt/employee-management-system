@@ -36,7 +36,12 @@ module AccessRequired
       end
     rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
       Rails.logger.error("Error validating token: #{e.message}")
-      render json: { message: "Invalid token" }, status: :unauthorized
+      error_message = e.message || "Access token is invalid"
+      render json: { message: error_message }, status: :unauthorized
+      nil
+    rescue StandardError => e
+      Rails.logger.error("Unexpected error: #{e.message}")
+      render json: { error: "An error occurred while validating token, please try again" }, status: :internal_server_error
       nil
     end
   end
