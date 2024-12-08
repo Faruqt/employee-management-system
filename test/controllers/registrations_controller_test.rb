@@ -176,8 +176,6 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
 
     response_data = JSON.parse(@response.body)
 
-    puts response_data
-
     assert_equal "Paul", response_data["user"]["first_name"]
     assert_equal "Doe", response_data["user"]["last_name"]
     assert_equal "123456789", response_data["user"]["telephone"]
