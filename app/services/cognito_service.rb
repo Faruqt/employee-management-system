@@ -68,7 +68,7 @@ class CognitoService
         "USER_ATTRIBUTES" => '{"email": "' + email + '"}'
       }
     })
-  
+
     Rails.logger.info("New password set for email: #{email}")
     response
   rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
@@ -101,7 +101,7 @@ class CognitoService
       user_pool_id: @user_pool_id,
       username: email,
       user_attributes: [
-        {"name": "email_verified", "value": "true"}
+        { "name": "email_verified", "value": "true" }
       ]
     })
     Rails.logger.info("Email verified for email: #{email}")
@@ -110,7 +110,7 @@ class CognitoService
     Rails.logger.error("Error verifying email: #{e.message}")
     raise
   end
-  
+
   # Request Password Reset
   def request_password_reset(email)
     Rails.logger.info("Initiating forgot password for email: #{email}")

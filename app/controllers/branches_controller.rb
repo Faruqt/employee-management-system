@@ -89,7 +89,7 @@ class BranchesController < ApplicationController
           end
         end
       end
-      
+
       # check if branch name already exists in the organization
       branch = Branch.find_by(name: name, organization_id: organization_id)
       if branch

@@ -50,5 +50,5 @@ Rails.application.routes.draw do
   # resources :users, only: %i[create show update]
 
   # Catch-all route for undefined paths
-  match '*path', to: 'application#route_not_found', via: :all
+  match "*path", to: "application#route_not_found", via: :all
 end

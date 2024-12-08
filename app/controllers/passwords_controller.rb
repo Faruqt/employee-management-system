@@ -4,15 +4,15 @@ class PasswordsController < ApplicationController
     include RolesRequired
 
     # ensure only directors, managers, and super admins can reset passwords of other users
-    before_action -> { roles_required(["director", "manager", "super_admin"]) }, only: [:admin_reset_password]
+    before_action -> { roles_required([ "director", "manager", "super_admin" ]) }, only: [ :admin_reset_password ]
 
-    before_action :validate_set_new_password_params, only: [:set_new_password]
-    before_action :validate_reset_password_params, only: [:reset_password]
-    before_action :validate_admin_reset_password_params, only: [:admin_reset_password]
-    before_action :validate_request_password_reset_params, only: [:request_password_reset]
-    before_action :validate_change_password_params, only: [:change_password]
-    before_action :check_user_exists, only: [:set_new_password, :request_password_reset, :reset_password, :admin_reset_password]
-    before_action :check_who_can_reset_password, only: [:admin_reset_password]
+    before_action :validate_set_new_password_params, only: [ :set_new_password ]
+    before_action :validate_reset_password_params, only: [ :reset_password ]
+    before_action :validate_admin_reset_password_params, only: [ :admin_reset_password ]
+    before_action :validate_request_password_reset_params, only: [ :request_password_reset ]
+    before_action :validate_change_password_params, only: [ :change_password ]
+    before_action :check_user_exists, only: [ :set_new_password, :request_password_reset, :reset_password, :admin_reset_password ]
+    before_action :check_who_can_reset_password, only: [ :admin_reset_password ]
 
     # Set up the Cognito service
     before_action :set_cognito_service
@@ -33,7 +33,7 @@ class PasswordsController < ApplicationController
         rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
             Rails.logger.error("Error setting new password: #{e.message}")
             handle_cognito_error(e)
-            return
+            nil
         rescue StandardError => e
             Rails.logger.error("Unexpected error: #{e.message}")
             render json: { error: "An error occurred while setting new password, please try again" }, status: :internal_server_error
@@ -51,7 +51,7 @@ class PasswordsController < ApplicationController
         rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
             Rails.logger.error("Error requesting password reset: #{e.message}")
             handle_cognito_error(e)
-            return
+            nil
         rescue StandardError => e
             Rails.logger.error("Unexpected error: #{e.message}")
             render json: { error: "An error occurred while requesting password reset, please try again" }, status: :internal_server_error
@@ -72,7 +72,7 @@ class PasswordsController < ApplicationController
         rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
             Rails.logger.error("Error resetting password: #{e.message}")
             handle_cognito_error(e)
-            return
+            nil
         rescue StandardError => e
             Rails.logger.error("Unexpected error: #{e.message}")
             render json: { error: "An error occurred while resetting password, please try again" }, status: :internal_server_error
@@ -95,7 +95,7 @@ class PasswordsController < ApplicationController
         rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
             Rails.logger.error("Error resetting password: #{e.message}")
             handle_cognito_error(e)
-            return
+            nil
         rescue StandardError => e
             Rails.logger.error("Unexpected error: #{e.message}")
             render json: { error: "An error occurred while resetting password, please try again" }, status: :internal_server_error
@@ -116,7 +116,7 @@ class PasswordsController < ApplicationController
         rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
             Rails.logger.error("Error changing password: #{e.message}")
             handle_cognito_error(e)
-            return
+            nil
         rescue StandardError => e
             Rails.logger.error("Unexpected error: #{e.message}")
             render json: { error: "An error occurred while changing password, please try again" }, status: :internal_server_error
@@ -136,7 +136,7 @@ class PasswordsController < ApplicationController
         case user_type
         when "employee" then Employee
         when "manager", "director" then Admin
-        else 
+        else
             raise ArgumentError, "Invalid user type, #{user_type}"
         end
     end
@@ -153,7 +153,6 @@ class PasswordsController < ApplicationController
         end
 
         check_email_and_user_type_are_present(email, params[:user_type])
-
     end
 
     def validate_request_password_reset_params
@@ -166,7 +165,6 @@ class PasswordsController < ApplicationController
         end
 
         check_email_and_user_type_are_present(email, params[:user_type])
-
     end
 
     def validate_reset_password_params
@@ -181,7 +179,6 @@ class PasswordsController < ApplicationController
         end
 
         check_email_and_user_type_are_present(email, params[:user_type])
-
     end
 
     def validate_admin_reset_password_params
@@ -194,7 +191,6 @@ class PasswordsController < ApplicationController
         end
 
         check_email_and_user_type_are_present(email, params[:user_type])
-
     end
 
     def validate_change_password_params
@@ -204,9 +200,8 @@ class PasswordsController < ApplicationController
 
         # Check if token, old_password, and new_password are present
         if token.blank? || old_password.blank? || new_password.blank?
-            return render_error("Token, old password, and new password are required")
+            render_error("Token, old password, and new password are required")
         end
-
     end
 
     def check_email_and_user_type_are_present(email, user_type)
@@ -216,11 +211,11 @@ class PasswordsController < ApplicationController
         # Check if user_type is present
         check_user_type_is_valid(user_type)
     end
-        
-    
+
+
     def check_email_is_valid(email)
         unless email =~ URI::MailTo::EMAIL_REGEXP
-            return render_error(ErrorMessages::INVALID_EMAIL)
+            render_error(ErrorMessages::INVALID_EMAIL)
         end
     end
 
@@ -230,7 +225,7 @@ class PasswordsController < ApplicationController
         end
 
         unless Constants::USER_TYPES.include?(user_type)
-            return render_error("The user type you provided is invalid. Please provide a valid user type: 'employee', 'manager', or 'director'.")
+            render_error("The user type you provided is invalid. Please provide a valid user type: 'employee', 'manager', or 'director'.")
         end
     end
 
@@ -240,7 +235,7 @@ class PasswordsController < ApplicationController
         user_class = user_class_for(params[:user_type])
 
         unless user_class.exists?(email: email)
-            return render_error("User not found", :not_found)
+            render_error("User not found", :not_found)
         end
     end
 
@@ -252,7 +247,7 @@ class PasswordsController < ApplicationController
 
         # get the user type of the user being changed
         user_type = params[:user_type]
-        
+
         # get the user type of the user changing the password
         current_user = @current_user
         current_user_email = current_user["email"]
@@ -270,24 +265,23 @@ class PasswordsController < ApplicationController
             # check if the admin is a manager or a director
             unless admin.is_manager || admin.is_director || admin.is_super_admin
                 Rails.logger.error("#{current_user_email} tried to reset the password of an employee")
-                return render_error("You are not authorized to reset the password of an employee", :unauthorized)
+                render_error("You are not authorized to reset the password of an employee", :unauthorized)
             end
 
         elsif user_type == "manager"
             # check if the admin is a director or a super admin
             unless admin.is_director || admin.is_super_admin
                 Rails.logger.error("#{current_user_email} tried to reset the password of a manager")
-                return render_error("You are not authorized to reset the password of a manager", :unauthorized)
+                render_error("You are not authorized to reset the password of a manager", :unauthorized)
             end
 
         elsif user_type == "director"
             # check if the admin is a super admin
             unless admin.is_super_admin
                 Rails.logger.error("#{current_user_email} tried to reset the password of a director")
-                return render_error("You are not authorized to reset the password of a director", :unauthorized)
+                render_error("You are not authorized to reset the password of a director", :unauthorized)
             end
         end
-
     end
 
     def render_error(message, status = :bad_request)

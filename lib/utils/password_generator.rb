@@ -7,7 +7,7 @@ module Utils
       password_string = rand(10**(length - 1)..(10**length - 1)).to_s
 
       # Add a random lowercase character to the password
-      password_string += (('a'..'z').to_a.sample)
+      password_string += (("a".."z").to_a.sample)
 
       password_string
     end
