@@ -10,8 +10,6 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     @manager1 = Admin.create!(first_name: "John", last_name: "Doe", email: "test_manager_one@gmail.co", telephone: "123456789", is_manager: true, branch: @branch, area: @area)
     @director1 = Admin.create!(first_name: "Jane", last_name: "Doe", email: "test_director_one@gmail.co", telephone: "123456789", is_director: true, branch: @branch)
 
-    # Set up the Cognito mock
-    @controller = RegistrationsController.new
     setup_cognito_mock
   end
 
@@ -145,7 +143,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
 
    test "should handle Cognito ServiceError gracefully" do
     # Simulate a Cognito ServiceError
-    CognitoService.any_instance.stubs(:register_user).raises(Aws::CognitoIdentityProvider::Errors::ServiceError.new("An error occurred", "ServiceError"))
+    @mock_cognito_service.stubs(:register_user).raises(Aws::CognitoIdentityProvider::Errors::ServiceError.new("An error occurred", "ServiceError"))
 
     post "/auth/register", params: admin_param(@area.id, @branch.id, user_type="manager", first_name="Henry", email="test-email@gmail.io")
 

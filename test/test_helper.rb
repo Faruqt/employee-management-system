@@ -13,8 +13,15 @@ module ActiveSupport
     fixtures :all
 
     def setup_cognito_mock
-      # Stubbing the register_user method to return a successful response
-      CognitoService.any_instance.stubs(:register_user).returns(true)
+      # Create a mock of CognitoService
+      @mock_cognito_service = mock("CognitoService")
+
+      # Stub the register_user method to return a successful response
+      @mock_cognito_service.stubs(:register_user).returns(true)
+
+      # Mock the CognitoService initialization to return the mock object
+      CognitoService.stubs(:new).returns(@mock_cognito_service)
+
     end
 
     # Add more helper methods to be used by all tests here...
