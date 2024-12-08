@@ -15,4 +15,7 @@ class Area < ApplicationRecord
 
     # One to Many relationship with Roles
     has_many :roles, dependent: :restrict_with_error
+
+    # One to Many relationship with Admins
+    has_many :admins, dependent: :restrict_with_error
 end

@@ -18,6 +18,8 @@ class Admin < ApplicationRecord
             is_director: is_director,
             is_deleted: is_deleted,
             is_super_admin: is_super_admin,
+            area: area&.public_attributes,
+            branch: branch&.public_attributes,
             created_at: created_at.strftime(Constants::DATETIME_FORMAT),
             updated_at: updated_at.strftime(Constants::DATETIME_FORMAT)
         }
@@ -29,4 +31,9 @@ class Admin < ApplicationRecord
         self.email = email.downcase if email.present?
     end
 
+    # One to Many relationship with Branches
+    belongs_to :branch 
+
+    # One to Many relationship with Areas
+    belongs_to :area, optional: true
 end

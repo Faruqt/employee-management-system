@@ -14,6 +14,9 @@ class Branch < ApplicationRecord
     # Many-to-Many relationship with Areas
     has_and_belongs_to_many :areas, join_table: :areas_branches
 
+    # One to Many relationship with Admins
+    has_many :admins, dependent: :restrict_with_error
+
     # Association with Organization
     belongs_to :organization
 end

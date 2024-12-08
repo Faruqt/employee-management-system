@@ -4,9 +4,11 @@ class Role < ApplicationRecord
             id: id,
             name: name,
             symbol: symbol,
-            area_id: area_id,
+            area: area&.public_attributes,
             created_at: created_at.strftime(Constants::DATETIME_FORMAT),
             updated_at: updated_at.strftime(Constants::DATETIME_FORMAT)
         }
     end
+
+    belongs_to :area
 end
