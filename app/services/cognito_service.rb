@@ -64,7 +64,7 @@ class CognitoService
       challenge_responses: {
         "USERNAME" => email,
         "NEW_PASSWORD" => password,
-        "SECRET_HASH"=> generate_secret_hash(email)
+        "SECRET_HASH"=> generate_secret_hash(email),
         "USER_ATTRIBUTES" => '{"email": "' + email + '"}'
       }
     })
@@ -93,7 +93,7 @@ class CognitoService
     Rails.logger.error("Error setting password: #{e.message}")
     raise
   end
-  
+
   # Verify the user's email
   def verify_email(email)
     Rails.logger.info("Verifying email for email: #{email}")
@@ -111,8 +111,8 @@ class CognitoService
     raise
   end
   
-  # Forgot Password
-  def forgot_password(email)
+  # Request Password Reset
+  def request_password_reset(email)
     Rails.logger.info("Initiating forgot password for email: #{email}")
     response = @client.forgot_password({
       client_id: @app_client_id,
@@ -127,7 +127,7 @@ class CognitoService
   end
 
   # Confirm New Password
-  def confirm_forgot_password(email, confirmation_code, new_password)
+  def reset_password(email, new_password, confirmation_code)
     Rails.logger.info("Confirming forgot password for email: #{email}")
     response = @client.confirm_forgot_password({
       client_id: @app_client_id,
@@ -140,6 +140,22 @@ class CognitoService
     response
   rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
     Rails.logger.error("Error confirming forgot password: #{e.message}")
+    raise
+  end
+
+  # Change Password
+  def change_password(access_token, previous_password, new_password)
+    Rails.logger.info("Changing password for user with access token: #{access_token}")
+    response = @client.change_password({
+      previous_password: previous_password,
+      proposed_password: new_password,
+      access_token: access_token
+    })
+
+    Rails.logger.info("Password changed successfully for user with access token: #{access_token}")
+    response
+  rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
+    Rails.logger.error("Error changing password: #{e.message}")
     raise
   end
 
