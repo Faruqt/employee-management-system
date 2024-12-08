@@ -12,7 +12,9 @@ class SessionsController < ApplicationController
 
     begin
       if user_type == "employee"
-        user = User.find_by(email: email)
+        user = Employee.find_by(email: email)
+      else
+        user = Admin.find_by(email: email)
       end
 
       if !user
@@ -106,6 +108,12 @@ class SessionsController < ApplicationController
 
     unless params[:user_type].present?
       render json: { error: "User type is required" }, status: :bad_request
+      return
+    end
+
+    # Ensure that user_type is valid
+    unless Constants::USER_TYPES.include?(params[:user_type])
+      render json: { error: "The user type you provided is invalid. Please provide a valid user type: 'employee', 'manager', or 'director'." }, status: :bad_request
       nil
     end
   end
