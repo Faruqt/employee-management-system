@@ -1,5 +1,5 @@
 class SessionsController < ApplicationController
-  # Check if email, password and user_type are present before trying to log in
+  # Check if email, password are present before trying to log in
   before_action :check_params, only: [ :create ]
   # Set up the Cognito service
   before_action :set_cognito_service
@@ -8,12 +8,10 @@ class SessionsController < ApplicationController
   def create
     email = params[:email]
     password = params[:password]
-    user_type = params[:user_type]
 
     begin
-      if user_type == "employee"
-        user = Employee.find_by(email: email)
-      else
+      user = Employee.find_by(email: email)
+      if !user
         user = Admin.find_by(email: email)
       end
 
@@ -86,35 +84,25 @@ class SessionsController < ApplicationController
 
   # Ensure email and password are provided
   def check_params
-    unless params[:email] || params[:password]
+
+    unless params[:email] && params[:password]
       render json: { error: "Email and password are required" }, status: :bad_request
       return
     end
 
-    unless params[:email]
+    unless params[:email].present?
       render json: { error: "Email is required" }, status: :bad_request
       return
     end
 
-    unless params[:password]
+    unless params[:password].present?
       render json: { error: "Password is required" }, status: :bad_request
       return
     end
 
-    unless params[:email].include?("@")
+    unless Utils::EmailValidator.valid?(params[:email])
       render json: { error: "Invalid email address" }, status: :bad_request
       return
-    end
-
-    unless params[:user_type].present?
-      render json: { error: "User type is required" }, status: :bad_request
-      return
-    end
-
-    # Ensure that user_type is valid
-    unless Constants::USER_TYPES.include?(params[:user_type])
-      render json: { error: "The user type you provided is invalid. Please provide a valid user type: 'employee', 'manager', or 'director'." }, status: :bad_request
-      nil
     end
   end
 
@@ -130,6 +118,8 @@ class SessionsController < ApplicationController
       render json: { error: "Invalid email or password" }, status: :unauthorized
     when Aws::CognitoIdentityProvider::Errors::UserNotConfirmedException
       render json: { error: "Account not confirmed" }, status: :unauthorized
+    when Aws::CognitoIdentityProvider::Errors::InvalidPasswordException
+      render json: { error: "Invalid password" }, status: :unauthorized
     else
       # For any other unexpected Cognito error, or if error is not related to Cognito
       render json: { error: "An error occurred while logging in, please try again" }, status: :internal_server_error
