@@ -4,7 +4,6 @@ module RolesRequired
   private
 
   def roles_required(allowed_roles)
-
     # Check if current_user is present
     if @current_user.nil?
       render json: { message: "Unauthorized access" }, status: :unauthorized

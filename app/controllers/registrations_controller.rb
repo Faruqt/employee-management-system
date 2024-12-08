@@ -20,7 +20,7 @@ class RegistrationsController < ApplicationController
       user = create_user(attributes)
 
       Rails.logger.info("User #{user.id} created successfully")
-      render json: {user: user.public_attributes, message: "User created successfully" }, status: :created
+      render json: { user: user.public_attributes, message: "User created successfully" }, status: :created
 
     rescue ActiveRecord::RecordInvalid => e
       Rails.logger.error("An error occurred while creating user: #{e.message}")
@@ -28,7 +28,7 @@ class RegistrationsController < ApplicationController
     rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
       Rails.logger.error("Error creating user: #{e.message}")
       handle_cognito_error(e)
-      return
+      nil
     rescue StandardError => e
       Rails.logger.error("Unexpected error: #{e.message}")
       render json: { error: "An error occurred while creating user, please try again" }, status: :internal_server_error
@@ -60,13 +60,13 @@ class RegistrationsController < ApplicationController
     user_type = attributes[:user_type]
     # Create the user in the local database without the password
     user = case user_type
-          when 'employee'
+    when "employee"
             create_employee(attributes)
-          when 'director', 'manager'
+    when "director", "manager"
             create_admin(attributes, user_type)
-          else
-            raise 'Unknown user type'
-          end
+    else
+            raise "Unknown user type"
+    end
 
     # After user is created, call the external service (e.g., Cognito) to store the password
     password = Utils::PasswordGenerator.generate_password(6)
@@ -78,7 +78,7 @@ class RegistrationsController < ApplicationController
       user.destroy
       raise e
     end
-    
+
     user
   end
 
@@ -106,19 +106,19 @@ class RegistrationsController < ApplicationController
       telephone: attributes[:telephone],
       branch_id: attributes[:branch_id]
     )
-    
+
     set_admin_role(attributes, admin, user_type)
     admin.save!
-    
+
     admin
   end
 
   def set_admin_role(attributes, admin, user_type)
     case user_type
-    when 'manager'
+    when "manager"
       admin.is_manager = true
       admin.area_id = attributes[:area_id]
-    when 'director'
+    when "director"
       admin.is_director = true
     end
   end
@@ -138,14 +138,14 @@ class RegistrationsController < ApplicationController
 
     # Define the required parameters based on user type
     required_params = %i[first_name email telephone user_type]
-    required_params += [:branch_id, :area_id] if %w[employee manager].include?(params[:user_type])
-    required_params += [:branch_id] if params[:user_type] == "director"
-    
+    required_params += [ :branch_id, :area_id ] if %w[employee manager].include?(params[:user_type])
+    required_params += [ :branch_id ] if params[:user_type] == "director"
+
     # Check for any missing parameters
     missing = required_params.reject { |key| params[key].present? }
-    
+
     if missing.any?
-      missing_params = missing.join(', ')
+      missing_params = missing.join(", ")
       error_message = "The following required fields are missing: #{missing_params}. Please provide them to proceed."
       render json: { error: error_message }, status: :bad_request
       return
@@ -154,7 +154,7 @@ class RegistrationsController < ApplicationController
     # Check if email is valid
     unless Utils::EmailValidator.valid?(params[:email])
       render json: { error: "The email provided is invalid. Please provide a valid email address." }, status: :bad_request
-      return
+      nil
     end
   end
 

@@ -9,7 +9,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     @branch.areas << @area
     @manager1 = Admin.create!(first_name: "John", last_name: "Doe", email: "test_manager_one@gmail.co", telephone: "123456789", is_manager: true, branch: @branch, area: @area)
     @director1 = Admin.create!(first_name: "Jane", last_name: "Doe", email: "test_director_one@gmail.co", telephone: "123456789", is_director: true, branch: @branch)
-  
+
     # Set up the Cognito mock
     @controller = RegistrationsController.new
     setup_cognito_mock
@@ -32,7 +32,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
   #   }
   # end
 
-  def admin_param(area_id, branch_id, user_type, first_name="Johnny", email="some-admin.gmail.com")
+  def admin_param(area_id, branch_id, user_type, first_name = "Johnny", email = "some-admin.gmail.com")
     {
       first_name: first_name,
       last_name: "Admin",
@@ -52,7 +52,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
   # end
 
   test "should return bad request if missing required parameters" do
-    post '/auth/register', params: admin_param(@area.id, @branch.id, user_type="manager", first_name="", email="some-email")
+    post "/auth/register", params: admin_param(@area.id, @branch.id, user_type="manager", first_name="", email="some-email")
 
     assert_response :bad_request
     response_data = JSON.parse(@response.body)
@@ -61,17 +61,17 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return error when user type is missing" do
-    post '/auth/register', params: admin_param(@area.id, @branch.id, user_type="", first_name="Paul", email="some-email")
-    
+    post "/auth/register", params: admin_param(@area.id, @branch.id, user_type="", first_name="Paul", email="some-email")
+
     assert_response :bad_request
     response_data = JSON.parse(@response.body)
 
     assert_equal "User type is required. Please specify if you're registering an 'employee', 'manager', or 'director'.", response_data["error"]
-  end 
+  end
 
   test "should return error when user type is invalid" do
-    post '/auth/register', params: admin_param(@area.id, @branch.id, user_type="invalid", first_name="Paul", email="some-email")
-    
+    post "/auth/register", params: admin_param(@area.id, @branch.id, user_type="invalid", first_name="Paul", email="some-email")
+
     assert_response :bad_request
     response_data = JSON.parse(@response.body)
 
@@ -79,8 +79,8 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return error when area is missing for manager" do
-    post '/auth/register', params: admin_param(area_id="",  @branch.id, user_type="manager", first_name="Paul", email="some-email")
-    
+    post "/auth/register", params: admin_param(area_id="",  @branch.id, user_type="manager", first_name="Paul", email="some-email")
+
     assert_response :bad_request
     response_data = JSON.parse(@response.body)
 
@@ -88,17 +88,16 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return error when branch is missing for director" do
-    post '/auth/register', params: admin_param(@area.id, branch_id="", user_type="director", first_name="Paul", email="some-email")
+    post "/auth/register", params: admin_param(@area.id, branch_id="", user_type="director", first_name="Paul", email="some-email")
 
     assert_response :bad_request
     response_data = JSON.parse(@response.body)
 
     assert_equal "The following required fields are missing: branch_id. Please provide them to proceed.", response_data["error"]
-
   end
 
   test "should return error when email is invalid" do
-    post '/auth/register', params: admin_param(@area.id, @branch.id, user_type="manager", first_name="Paul", email="some-email")
+    post "/auth/register", params: admin_param(@area.id, @branch.id, user_type="manager", first_name="Paul", email="some-email")
 
     assert_response :bad_request
     response_data = JSON.parse(@response.body)
@@ -107,55 +106,52 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create manager with valid parameters" do
-    post '/auth/register', params: admin_param(@area.id, @branch.id, user_type="manager", first_name="Henry", email="manager_one@gmail.co" )
+    post "/auth/register", params: admin_param(@area.id, @branch.id, user_type="manager", first_name="Henry", email="manager_one@gmail.co")
 
     assert_response :created
     response_data = JSON.parse(@response.body)
 
-    assert_equal 'Henry', response_data["user"]["first_name"]
+    assert_equal "Henry", response_data["user"]["first_name"]
     assert_equal true, response_data["user"]["is_manager"]
     assert_equal false, response_data["user"]["is_director"]
     assert_equal false, response_data["user"]["is_super_admin"]
-    assert_equal  "Admin", response_data["user"]["last_name"]
-    assert_equal "123456789" , response_data["user"]["telephone"]
+    assert_equal "Admin", response_data["user"]["last_name"]
+    assert_equal "123456789", response_data["user"]["telephone"]
     assert_equal @branch.id, response_data["user"]["branch"]["id"]
     assert_equal @area.id, response_data["user"]["area"]["id"]
-
   end
 
   test "should return bad request if email is already taken" do
-    post '/auth/register', params: admin_param(@area.id, @branch.id, user_type="manager", first_name="Paul", email=@manager1.email)
-    
+    post "/auth/register", params: admin_param(@area.id, @branch.id, user_type="manager", first_name="Paul", email=@manager1.email)
+
     assert_response :bad_request
     assert_includes @response.body, "Account already exists with the email"
   end
 
   test "should create director with valid parameters" do
-    post '/auth/register', params: admin_param("", @branch.id, user_type="director", first_name="Paul", email="director_one@email.co")
+    post "/auth/register", params: admin_param("", @branch.id, user_type="director", first_name="Paul", email="director_one@email.co")
 
     assert_response :created
     response_data = JSON.parse(@response.body)
 
-    assert_equal 'Paul', response_data["user"]["first_name"]
+    assert_equal "Paul", response_data["user"]["first_name"]
     assert_equal false, response_data["user"]["is_manager"]
     assert_equal true, response_data["user"]["is_director"]
     assert_equal false, response_data["user"]["is_super_admin"]
-    assert_equal  "Admin", response_data["user"]["last_name"]
-    assert_equal "123456789" , response_data["user"]["telephone"]
+    assert_equal "Admin", response_data["user"]["last_name"]
+    assert_equal "123456789", response_data["user"]["telephone"]
     assert_equal @branch.id, response_data["user"]["branch"]["id"]
-
   end
 
    test "should handle Cognito ServiceError gracefully" do
     # Simulate a Cognito ServiceError
     CognitoService.any_instance.stubs(:register_user).raises(Aws::CognitoIdentityProvider::Errors::ServiceError.new("An error occurred", "ServiceError"))
 
-    post '/auth/register', params: admin_param(@area.id, @branch.id, user_type="manager", first_name="Henry", email="test-email@gmail.io")
+    post "/auth/register", params: admin_param(@area.id, @branch.id, user_type="manager", first_name="Henry", email="test-email@gmail.io")
 
     assert_response :internal_server_error
     response_data = JSON.parse(@response.body)
 
     assert_equal "An error occurred while creating user, please try again", response_data["error"]
-
    end
 end

@@ -1,5 +1,4 @@
 class Admin < ApplicationRecord
-
     # Validations
     validates :first_name, presence: true
     validates :email, presence: true, uniqueness: true
@@ -32,7 +31,7 @@ class Admin < ApplicationRecord
     end
 
     # One to Many relationship with Branches
-    belongs_to :branch 
+    belongs_to :branch
 
     # One to Many relationship with Areas
     belongs_to :area, optional: true
