@@ -7,4 +7,7 @@ module Constants
 
   # Pagination settings
   DEFAULT_PER_PAGE = 20
+
+  # User types
+  USER_TYPES = %w[employee manager director].freeze
 end
