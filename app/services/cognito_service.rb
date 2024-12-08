@@ -12,7 +12,6 @@ class CognitoService
   # Sign Up a User
   def register_user(email, password)
     Rails.logger.info("Attempting to create user with email: #{email}")
-
     # Create the user in Cognito
     response = @client.admin_create_user({
         user_pool_id: @user_pool_id,
@@ -37,6 +36,7 @@ class CognitoService
   # Authenticate a User (Sign In)
   def authenticate(email, password)
     Rails.logger.info("Authenticating user with email: #{email}")
+
     response = @client.initiate_auth({
       client_id: @app_client_id,
       auth_flow: "USER_PASSWORD_AUTH",

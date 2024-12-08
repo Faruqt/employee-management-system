@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_12_01_225718) do
+ActiveRecord::Schema[8.0].define(version: 2024_12_08_181809) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -74,6 +74,10 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_01_225718) do
     t.date "date_of_birth"
     t.date "contract_start_date"
     t.date "contract_end_date"
+    t.uuid "branch_id"
+    t.uuid "area_id"
+    t.index ["area_id"], name: "index_employees_on_area_id"
+    t.index ["branch_id"], name: "index_employees_on_branch_id"
     t.index ["email"], name: "index_employees_on_email", unique: true
   end
 
@@ -99,5 +103,7 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_01_225718) do
   add_foreign_key "areas_branches", "areas"
   add_foreign_key "areas_branches", "branches"
   add_foreign_key "branches", "organizations"
+  add_foreign_key "employees", "areas"
+  add_foreign_key "employees", "branches"
   add_foreign_key "roles", "areas"
 end

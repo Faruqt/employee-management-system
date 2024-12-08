@@ -19,6 +19,8 @@ class Employee < ApplicationRecord
             tax_code: tax_code,
             shift_code: shift_code,
             is_deleted: is_deleted,
+            area: area&.public_attributes,
+            branch: branch&.public_attributes,
             date_of_birth: date_of_birth.strftime(Constants::DATE_FORMAT),
             contract_start_date: contract_start_date.strftime(Constants::DATE_FORMAT),
             contract_end_date: contract_end_date.strftime(Constants::DATE_FORMAT),
@@ -32,4 +34,10 @@ class Employee < ApplicationRecord
     def downcase_email
         self.email = email.downcase if email.present?
     end
+
+    # One to Many relationship with Branches
+    belongs_to :branch
+
+    # One to Many relationship with Areas
+    belongs_to :area
 end
