@@ -25,11 +25,30 @@ Rails.application.routes.draw do
   resources :roles, only: [ :index, :show, :create, :update, :destroy ]
 
   # Defines the routes for the sessions controller
-  post "login" => "sessions#create"
-  delete "logout" => "sessions#destroy"
+  post "auth/login" => "sessions#create"
+  delete "auth/logout" => "sessions#destroy"
 
   # Defines the routes for the registration controller
-  post "register" => "registrations#create"
+  post "auth/register" => "registrations#create"
+
+  # Defines custom routes for passwords controller
+  # User has to set a new password after account creation
+  post "auth/password/set", to: "passwords#set_new_password"
+
+  # User can request a password reset
+  post "auth/password/forgot", to: "passwords#request_password_reset"
+
+  # User can reset their password
+  post "auth/password/reset", to: "passwords#reset_password"
+
+  # User can change their password
+  post "auth/password/change", to: "passwords#change_password"
+
+  # Admin can reset a user's password
+  post "auth/admin/password/reset", to: "passwords#admin_reset_password"
 
   # resources :users, only: %i[create show update]
+
+  # Catch-all route for undefined paths
+  match '*path', to: 'application#route_not_found', via: :all
 end
