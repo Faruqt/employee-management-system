@@ -5,7 +5,7 @@ class RegistrationsController < ApplicationController
   # Set up the Cognito service
   before_action :set_cognito_service
 
-  # POST /register_user
+  # POST /register
   def create
     attributes = user_params.to_h.symbolize_keys
     begin
@@ -82,7 +82,7 @@ class RegistrationsController < ApplicationController
   end
 
   def create_employee(attributes)
-    User.create!(
+    Employee.create!(
       first_name: attributes[:first_name],
       last_name: attributes[:last_name],
       email: attributes[:email],
@@ -115,11 +115,9 @@ class RegistrationsController < ApplicationController
   def set_admin_role(admin, user_type)
     case user_type
     when 'manager'
-      puts "Setting manager role"
       admin.is_manager = true
       admin.area_id = attributes[:area_id]
     when 'director'
-      puts "Setting director role"
       admin.is_director = true
     end
   end
@@ -132,7 +130,7 @@ class RegistrationsController < ApplicationController
     end
 
     # Ensure that user_type is valid
-    unless %w[employee manager director].include?(params[:user_type])
+    unless Constants::USER_TYPES.include?(params[:user_type])
       render json: { error: "The user type you provided is invalid. Please provide a valid user type: 'employee', 'manager', or 'director'." }, status: :bad_request
       return
     end
