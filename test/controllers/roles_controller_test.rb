@@ -74,7 +74,7 @@ class RolesControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal "Role One", role["name"]
     assert_equal "Role One Symbol", role["symbol"]
-    assert_equal @area1.id, role["area_id"]
+    assert_equal @area1.id, role["area"]["id"]
   end
 
   test "should return error for invalid role ID" do
@@ -105,7 +105,7 @@ class RolesControllerTest < ActionDispatch::IntegrationTest
     assert JSON.parse(@response.body)["role"]["id"]
     assert_equal "Role Four", JSON.parse(@response.body)["role"]["name"]
     assert_equal "Role Four Symbol", JSON.parse(@response.body)["role"]["symbol"]
-    assert_equal @area1.id, JSON.parse(@response.body)["role"]["area_id"]
+    assert_equal @area1.id, JSON.parse(@response.body)["role"]["area"]["id"]
     assert JSON.parse(@response.body)["role"]["created_at"]
     assert JSON.parse(@response.body)["role"]["updated_at"]
     assert_equal "Role created successfully", JSON.parse(@response.body)["message"]
@@ -149,7 +149,7 @@ class RolesControllerTest < ActionDispatch::IntegrationTest
     assert JSON.parse(@response.body)["role"]["id"]
     assert_equal "Role One", JSON.parse(@response.body)["role"]["name"]
     assert_equal "Role Four Symbol", JSON.parse(@response.body)["role"]["symbol"]
-    assert_equal @area2.id, JSON.parse(@response.body)["role"]["area_id"]
+    assert_equal @area2.id, JSON.parse(@response.body)["role"]["area"]["id"]
     assert JSON.parse(@response.body)["role"]["created_at"]
   end
 
@@ -201,7 +201,7 @@ class RolesControllerTest < ActionDispatch::IntegrationTest
     assert JSON.parse(@response.body)["role"]
     assert_equal "Role Two", JSON.parse(@response.body)["role"]["name"]
     assert_equal "Role One Symbol Updated", JSON.parse(@response.body)["role"]["symbol"]
-    assert_equal @area1.id, JSON.parse(@response.body)["role"]["area_id"]
+    assert_equal @area1.id, JSON.parse(@response.body)["role"]["area"]["id"]
   end
 
   test "should return error if symbol not provided during update" do

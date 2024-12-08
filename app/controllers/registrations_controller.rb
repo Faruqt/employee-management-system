@@ -17,10 +17,10 @@ class RegistrationsController < ApplicationController
       end
 
       # Create the user
-      user = create_user(attributes[:user_type], attributes)
+      user = create_user(attributes)
 
       Rails.logger.info("User #{user.id} created successfully")
-      render json: { message: "User #{user.first_name} created successfully" }, status: :created
+      render json: {user: user.public_attributes, message: "User created successfully" }, status: :created
 
     rescue ActiveRecord::RecordInvalid => e
       Rails.logger.error("An error occurred while creating user: #{e.message}")
@@ -56,7 +56,8 @@ class RegistrationsController < ApplicationController
   end
 
   # Create a user based on the user type
-  def create_user(user_type, attributes)
+  def create_user(attributes)
+    user_type = attributes[:user_type]
     # Create the user in the local database without the password
     user = case user_type
           when 'employee'
@@ -77,7 +78,7 @@ class RegistrationsController < ApplicationController
       user.destroy
       raise e
     end
-
+    
     user
   end
 
@@ -106,13 +107,13 @@ class RegistrationsController < ApplicationController
       branch_id: attributes[:branch_id]
     )
     
-    set_admin_role(admin, user_type)
+    set_admin_role(attributes, admin, user_type)
     admin.save!
     
     admin
   end
 
-  def set_admin_role(admin, user_type)
+  def set_admin_role(attributes, admin, user_type)
     case user_type
     when 'manager'
       admin.is_manager = true
@@ -169,7 +170,7 @@ class RegistrationsController < ApplicationController
     when Aws::CognitoIdentityProvider::Errors::TooManyRequestsException
       render json: { error: "Too many requests" }, status: :bad_request
     else
-      render json: { error: "An error occurred while trying to create your account, please try again" }, status: :internal_server_error
+      render json: { error: "An error occurred while creating user, please try again" }, status: :internal_server_error
     end
   end
 end
