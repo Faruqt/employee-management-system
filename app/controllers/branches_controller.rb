@@ -1,4 +1,14 @@
 class BranchesController < ApplicationController
+
+  # Include the required concerns
+  include AccessRequired
+  include RolesRequired
+
+  before_action :authenticate_user!
+
+  # Ensure that only super admins and directors can access these routes
+  before_action -> { roles_required(["super_admin", "director"]) }
+
   # GET /branches
   def index
     begin
