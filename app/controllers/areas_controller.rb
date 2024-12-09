@@ -1,4 +1,17 @@
 class AreasController < ApplicationController
+
+  # Include the required concerns
+  include AccessRequired
+  include RolesRequired
+
+  before_action :authenticate_user!
+
+  # Ensure that only super admins and directors can access these routes
+  before_action -> { roles_required(["super_admin", "director"]) }, only: [:show, :create, :update, :destroy]
+
+  # Ensure all admins can access the index route
+  before_action -> { roles_required(["super_admin", "manager", "director"]) }, only: [:index]
+
   # GET /areas
   def index
     begin

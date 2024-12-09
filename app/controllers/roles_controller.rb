@@ -1,4 +1,14 @@
 class RolesController < ApplicationController
+
+  # Include the required concerns
+  include AccessRequired
+  include RolesRequired
+
+  before_action :authenticate_user!
+
+  # Ensure all admins can access all routes
+  before_action -> { roles_required(["super_admin", "manager", "director"]) }
+
   # GET /roles
   def index
     begin
