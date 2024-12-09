@@ -133,7 +133,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return bad request if manager email is already taken" do
-    post "/auth/register", params: admin_param(@area.id, @branch.id, user_type="manager", first_name="Paul", email=@manager1.email)
+    post "/auth/register", params: admin_param(@area.id, @branch.id, user_type="manager", first_name="Paul", email=@manager.email)
 
     assert_response :bad_request
     assert_includes @response.body, "Account already exists with the email"
@@ -155,7 +155,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return bad request if director email is already taken" do
-    post "/auth/register", params: admin_param("", @branch.id, user_type="director", first_name="Paul", email = @director1.email)
+    post "/auth/register", params: admin_param("", @branch.id, user_type="director", first_name="Paul", email = @director.email)
 
     assert_response :bad_request
     assert_includes @response.body, "Account already exists with the email"

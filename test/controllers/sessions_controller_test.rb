@@ -56,9 +56,9 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
         define_method("test_should_log_in_successfully_as_#{user_info[:user_type]}") do
             user_type = user_info[:user_type]
             if user_type == "manager"
-                user = @manager1
+                user = @manager
             elsif user_type == "director"
-                user = @director1
+                user = @director
             else
                 user = @super_admin
             end
@@ -122,7 +122,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     def simulate_cognito_error(error_type, error_message, error_code)
         @mock_cognito_service.stubs(:authenticate).raises(error_type.new(error_message, error_code))
 
-        post @login_path, params: { email: @manager1.email, password: "password" }
+        post @login_path, params: { email: @manager.email, password: "password" }
 
         assert_response :unauthorized
         response_data = JSON.parse(@response.body)

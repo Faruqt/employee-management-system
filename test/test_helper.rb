@@ -78,9 +78,10 @@ module ActiveSupport
       @branch = Branch.create!(name: "Branch One", address: "Branch Address One", organization: @org)
       @area = Area.create!(name: "Area One", color: "Color One")
       @branch.areas << @area
-      @manager1 = Admin.create!(first_name: "John", last_name: "Doe", email: "test_manager_one@gmail.co", telephone: "123456789", is_manager: true, branch: @branch, area: @area)
+      @manager = Admin.create!(first_name: "John", last_name: "Doe", email: "test_manager_one@gmail.co", telephone: "123456789", is_manager: true, branch: @branch, area: @area)
+      @role = Role.create!(name: "Role One", symbol: "Role One Symbol", area_id: @area.id)
 
-      @director1 = Admin.create!(first_name: "Jane", last_name: "Doe", email: "test_director_one@gmail.co", telephone: "123456789", is_director: true, branch: @branch)
+      @director = Admin.create!(first_name: "Jane", last_name: "Doe", email: "test_director_one@gmail.co", telephone: "123456789", is_director: true, branch: @branch)
       @super_admin = Admin.create!(first_name: "Super", last_name: "Admin", email: "test_super_one@gmail.co", telephone: "123456789", is_super_admin: true)
       @employee1 = Employee.create!(first_name: "John", last_name: "Doe", email: "test_employee_one@gmail.co", telephone: "123456789", branch: @branch, area: @area, contract_code: "123456", tax_code: "654321", date_of_birth: "1990-01-01", contract_start_date: "2021-01-01", contract_end_date: "2022-01-01")
     end

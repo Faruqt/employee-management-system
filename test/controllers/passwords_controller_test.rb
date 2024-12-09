@@ -17,9 +17,9 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     when "employee"
       @employee1
     when "manager"
-      @manager1
+      @manager
     when "director"
-      @director1
+      @director
     when "super_admin"
       @super_admin
     end
@@ -99,8 +99,8 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     { email: "some-email", new_password: "some-password", user_type: "director", error: "The email provided is invalid. Please provide a valid email address." }
     ].each do |params|
       define_method("test_should_return_bad_request_if_missing_required_parameters_#{params[:email]}_#{params[:new_password]}_#{params[:user_type]}") do
-        setup_cognito_mock_for_authentication(@manager1.email)
-        session = setup_authenticated_session(@manager1)
+        setup_cognito_mock_for_authentication(@manager.email)
+        session = setup_authenticated_session(@manager)
 
         # Get the access token from the session data
         access_token = session[:access_token]
@@ -134,8 +134,8 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     { user_type: "super_admin", error: "The user type you provided is invalid. Please provide a valid user type: 'employee', 'manager', or 'director'." }
     ].each do |params|
       define_method("test_manager_cannot_reset_password_for_#{params[:user_type]}") do
-        setup_cognito_mock_for_authentication(@manager1.email)
-        session = setup_authenticated_session(@manager1)
+        setup_cognito_mock_for_authentication(@manager.email)
+        session = setup_authenticated_session(@manager)
 
         # Get the access token from the session data
         access_token = session[:access_token]
@@ -162,8 +162,8 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     { user_type: "super_admin", error: "The user type you provided is invalid. Please provide a valid user type: 'employee', 'manager', or 'director'." }
     ].each do |params|
       define_method("test_director_cannot_reset_password_for_#{params[:user_type]}") do
-        setup_cognito_mock_for_authentication(@director1.email)
-        session = setup_authenticated_session(@director1)
+        setup_cognito_mock_for_authentication(@director.email)
+        session = setup_authenticated_session(@director)
 
         # Get the access token from the session data
         access_token = session[:access_token]
@@ -222,11 +222,11 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
         # Get the access token from the session data
         access_token = session[:access_token]
 
-        post @admin_reset_password_path, params: { email: @manager1.email, new_password: "new_password", user_type: "employee" }, headers: { "Authorization" => "Bearer #{access_token}" }
+        post @admin_reset_password_path, params: { email: @manager.email, new_password: "new_password", user_type: "employee" }, headers: { "Authorization" => "Bearer #{access_token}" }
         assert_response :ok
         response_data = JSON.parse(response.body)
 
-        assert_equal "Password reset for #{@manager1.email} was successful", response_data["message"]
+        assert_equal "Password reset for #{@manager.email} was successful", response_data["message"]
       end
     end
 
@@ -237,11 +237,11 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
       # Get the access token from the session data
       access_token = session[:access_token]
 
-      post @admin_reset_password_path, params: { email: @director1.email, new_password: "new_password", user_type: "employee" }, headers: { "Authorization" => "Bearer #{access_token}" }
+      post @admin_reset_password_path, params: { email: @director.email, new_password: "new_password", user_type: "employee" }, headers: { "Authorization" => "Bearer #{access_token}" }
       assert_response :ok
       response_data = JSON.parse(response.body)
 
-      assert_equal "Password reset for #{@director1.email} was successful", response_data["message"]
+      assert_equal "Password reset for #{@director.email} was successful", response_data["message"]
     end
 
               [

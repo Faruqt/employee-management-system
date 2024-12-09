@@ -16,9 +16,9 @@ class OrganizationsControllerTest < ActionDispatch::IntegrationTest
     when "employee"
       @employee1
     when "manager"
-      @manager1
+      @manager
     when "director"
-      @director1
+      @director
     when "super_admin"
       @super_admin
     end
@@ -64,8 +64,8 @@ class OrganizationsControllerTest < ActionDispatch::IntegrationTest
 
     test "should return error for unauthorized user" do
     # Test with an unauthorized user
-    setup_cognito_mock_for_authentication(@manager1.email)
-    session = setup_authenticated_session(@manager1)
+    setup_cognito_mock_for_authentication(@manager.email)
+    session = setup_authenticated_session(@manager)
 
     # Get the access token from the session data
     access_token = session[:access_token]
