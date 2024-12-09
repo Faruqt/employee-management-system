@@ -11,6 +11,7 @@ module AccessRequired
   private
 
   def authenticate_user!
+
     access_token = request.headers["Authorization"]&.split(" ")&.last
 
     # Check if Authorization header exists
@@ -29,11 +30,13 @@ module AccessRequired
       response = client.get_user({ access_token: access_token })
 
       @current_user["username"] = response.username
+      @current_user["access_token"] = access_token
 
       # You can also fetch user attributes here, such as email
       response.user_attributes.each do |attribute|
         @current_user[attribute.name] = attribute.value if attribute.name == "email"
       end
+
     rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
       Rails.logger.error("Error validating token: #{e.message}")
       error_message = e.message || "Access token is invalid"
