@@ -3,6 +3,8 @@ class PasswordsController < ApplicationController
     include AccessRequired
     include RolesRequired
 
+    before_action :authenticate_user!, only: [ :admin_reset_password, :change_password ]
+
     # ensure only directors, managers, and super admins can reset passwords of other users
     before_action -> { roles_required([ "director", "manager", "super_admin" ]) }, only: [ :admin_reset_password ]
 
@@ -43,7 +45,6 @@ class PasswordsController < ApplicationController
     # POST auth/password/forgot
     def request_password_reset
         email = params[:email]
-        user_type = params[:user_type]
 
         begin
             @cognito_service.request_password_reset(email)
@@ -104,7 +105,7 @@ class PasswordsController < ApplicationController
 
     # POST /auth/password/change
     def change_password
-        token = params[:token]
+        token = @current_user["access_token"]
         old_password = params[:old_password]
         new_password = params[:new_password]
 
@@ -131,40 +132,28 @@ class PasswordsController < ApplicationController
         @cognito_service = CognitoService.new
     end
 
-    # Get the user class based on the user type
-    def user_class_for(user_type)
-        case user_type
-        when "employee" then Employee
-        when "manager", "director" then Admin
-        else
-            raise ArgumentError, "Invalid user type, #{user_type}"
-        end
-    end
-
     def validate_set_new_password_params
         email = params[:email]
         new_password = params[:new_password]
         session_code = params[:session_code]
-        user_type = params[:user_type]
 
         # Check if email, new_password, and session_code are present
         if email.blank? || new_password.blank? || session_code.blank?
             return render_error("Email, new password, and session code are required")
         end
 
-        check_email_and_user_type_are_present(email, params[:user_type])
+        check_email_is_valid(email)
     end
 
     def validate_request_password_reset_params
         email = params[:email]
-        user_type = params[:user_type]
 
         # Check if email is present
         if email.blank?
             return render_error("Email is required")
         end
 
-        check_email_and_user_type_are_present(email, params[:user_type])
+        check_email_is_valid(email)
     end
 
     def validate_reset_password_params
@@ -178,63 +167,55 @@ class PasswordsController < ApplicationController
 
         end
 
-        check_email_and_user_type_are_present(email, params[:user_type])
+        check_email_is_valid(email)
     end
 
     def validate_admin_reset_password_params
         email = params[:email]
         new_password = params[:new_password]
+        user_type = params[:user_type]
+
+        if user_type.blank?
+            return render_error("User type is required")
+        end
+
+        unless Constants::USER_TYPES.include?(user_type)
+            return render_error("The user type you provided is invalid. Please provide a valid user type: 'employee', 'manager', or 'director'.")
+        end
 
         # Check if email and new_password are present
         if email.blank? || new_password.blank?
             return render_error("Email and new password are required")
         end
 
-        check_email_and_user_type_are_present(email, params[:user_type])
+        check_email_is_valid(email)
     end
 
     def validate_change_password_params
-        token = params[:token]
         old_password = params[:old_password]
         new_password = params[:new_password]
 
-        # Check if token, old_password, and new_password are present
-        if token.blank? || old_password.blank? || new_password.blank?
-            render_error("Token, old password, and new password are required")
+        # Check if old_password, and new_password are present
+        if old_password.blank? || new_password.blank?
+            render_error("Old password and new password are required")
         end
     end
-
-    def check_email_and_user_type_are_present(email, user_type)
-        # Check if email is valid
-        check_email_is_valid(email)
-
-        # Check if user_type is present
-        check_user_type_is_valid(user_type)
-    end
-
 
     def check_email_is_valid(email)
         unless email =~ URI::MailTo::EMAIL_REGEXP
-            render_error(ErrorMessages::INVALID_EMAIL)
+            render_error("The email provided is invalid. Please provide a valid email address.", :bad_request)
         end
     end
-
-    def check_user_type_is_valid(user_type)
-        unless user_type.present?
-            return render_error("User type is required")
-        end
-
-        unless Constants::USER_TYPES.include?(user_type)
-            render_error("The user type you provided is invalid. Please provide a valid user type: 'employee', 'manager', or 'director'.")
-        end
-    end
-
 
     def check_user_exists
         email = params[:email]
-        user_class = user_class_for(params[:user_type])
+    
+        user = Employee.find_by(email: email)
+        if !user
+            user = Admin.find_by(email: email)
+        end
 
-        unless user_class.exists?(email: email)
+        unless user
             render_error("User not found", :not_found)
         end
     end
@@ -265,22 +246,24 @@ class PasswordsController < ApplicationController
             # check if the admin is a manager or a director
             unless admin.is_manager || admin.is_director || admin.is_super_admin
                 Rails.logger.error("#{current_user_email} tried to reset the password of an employee")
-                render_error("You are not authorized to reset the password of an employee", :unauthorized)
+                return render_error("You are not authorized to reset the password of an employee", :unauthorized)
             end
 
         elsif user_type == "manager"
             # check if the admin is a director or a super admin
             unless admin.is_director || admin.is_super_admin
                 Rails.logger.error("#{current_user_email} tried to reset the password of a manager")
-                render_error("You are not authorized to reset the password of a manager", :unauthorized)
+                return render_error("You are not authorized to reset the password of a manager", :unauthorized)
             end
 
         elsif user_type == "director"
             # check if the admin is a super admin
             unless admin.is_super_admin
                 Rails.logger.error("#{current_user_email} tried to reset the password of a director")
-                render_error("You are not authorized to reset the password of a director", :unauthorized)
+                return render_error("You are not authorized to reset the password of a director", :unauthorized)
             end
+        else 
+            return render_error("The user type you provided is invalid. Please provide a valid user type: 'employee', 'manager', or 'director'.", :bad_request)
         end
     end
 
