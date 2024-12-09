@@ -12,6 +12,19 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     setup_cognito_mock
   end
 
+  def get_user_by_user_type(user_type)
+    case user_type
+    when "employee"
+      @employee1
+    when "manager"
+      @manager1
+    when "director"
+      @director1
+    when "super_admin"
+      @super_admin
+    end
+  end
+
     [
     { email: "", new_password: "", session_code: "", error: "Email, new password, and session code are required" },
     { email: "employee@yahoo.com", new_password: "", session_code: "", error: "Email, new password, and session code are required" },
@@ -129,17 +142,9 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
 
         user_type = params[:user_type]
 
-        # if user_type is manager, the email should be that of a manager
-        # if user_type is director, the email should be that of a director
-        if user_type == "manager"
-          email = @manager1.email
-        elsif user_type == "director"
-          email = @director1.email
-        else
-          email = @super_admin.email
-        end
+        user = get_user_by_user_type(user_type)
 
-        post @admin_reset_password_path, params: { email: email, new_password: "new_password", user_type: user_type }, headers: { "Authorization" => "Bearer #{access_token}" }
+        post @admin_reset_password_path, params: { email: user.email, new_password: "new_password", user_type: user_type }, headers: { "Authorization" => "Bearer #{access_token}" }
         if user_type == "super_admin"
           assert_response :bad_request
         else
@@ -165,15 +170,9 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
 
         user_type = params[:user_type]
 
-        # if user_type is manager, the email should be that of a manager
-        # if user_type is director, the email should be that of a director
-        if user_type == "director"
-          email = @director1.email
-        else
-          email = @super_admin.email
-        end
+        user = get_user_by_user_type(user_type)
 
-        post @admin_reset_password_path, params: { email: email, new_password: "new_password", user_type: user_type }, headers: { "Authorization" => "Bearer #{access_token}" }
+        post @admin_reset_password_path, params: { email: user.email, new_password: "new_password", user_type: user_type }, headers: { "Authorization" => "Bearer #{access_token}" }
         if user_type == "super_admin"
           assert_response :bad_request
         else
@@ -193,13 +192,7 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     ].each do |params|
       define_method("test_#{params[:user_type]}_can_reset_password_for_employee") do
         user_type = params[:user_type]
-        if user_type == "manager"
-          user = @manager1
-        elsif user_type == "director"
-          user = @director1
-        else
-          user = @super_admin
-        end
+        user = get_user_by_user_type(user_type)
 
         setup_cognito_mock_for_authentication(user.email)
         session = setup_authenticated_session(user)
@@ -221,11 +214,7 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     ].each do |params|
       define_method("test_#{params[:user_type]}_can_reset_password_for_managers") do
         user_type = params[:user_type]
-        if user_type == "director"
-          user = @director1
-        else
-          user = @super_admin
-        end
+        user = get_user_by_user_type(user_type)
 
         setup_cognito_mock_for_authentication(user.email)
         session = setup_authenticated_session(user)
@@ -263,15 +252,7 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     ].each do |params|
         define_method("test_should_return_bad_request_if_missing_required_parameters_#{params[:user_type]}") do
         user_type = params[:user_type]
-        if user_type == "employee"
-          user = @employee1
-        elsif user_type == "manager"
-          user = @manager1
-        elsif user_type == "director"
-          user = @director1
-        else
-          user = @super_admin
-        end
+        user = get_user_by_user_type(user_type)
 
         setup_cognito_mock_for_authentication(user.email)
         session = setup_authenticated_session(user)
@@ -295,15 +276,7 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     ].each do |params|
         define_method("test_should_return_not_authorised_without_authentication_#{params[:user_type]}") do
         user_type = params[:user_type]
-        if user_type == "employee"
-          user = @employee1
-        elsif user_type == "manager"
-          user = @manager1
-        elsif user_type == "director"
-          user = @director1
-        else
-          user = @super_admin
-        end
+        user = get_user_by_user_type(user_type)
 
         post @change_password_path, params: { old_password: "password", new_password: "new_password" }
 
@@ -324,15 +297,7 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     ].each do |params|
       define_method("test_#{params[:user_type]}_can_change_their_password") do
           user_type = params[:user_type]
-          if user_type == "employee"
-            user = @employee1
-          elsif user_type == "manager"
-            user = @manager1
-          elsif user_type == "director"
-            user = @director1
-          else
-            user = @super_admin
-          end
+          user = get_user_by_user_type(user_type)
 
           setup_cognito_mock_for_authentication(user.email)
           session = setup_authenticated_session(user)
