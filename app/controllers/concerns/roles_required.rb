@@ -9,7 +9,7 @@ module RolesRequired
       render json: { message: "Unauthorized access" }, status: :unauthorized
       return
     end
-    
+
     # Find the admin by email
     admin = Admin.find_by(email: @current_user["email"])
 

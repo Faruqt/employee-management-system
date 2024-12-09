@@ -34,7 +34,7 @@ class Admin < ApplicationRecord
     # required for managers and directors
     # optional for super admins
     belongs_to :branch, optional: true
-    
+
 
     # One to Many relationship with Areas
     # required for managers

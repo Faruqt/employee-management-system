@@ -6,7 +6,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     setup_cognito_mock
   end
 
-  def employee_param(area_id, branch_id, first_name= "John", email="john_doe@gmail.com")
+  def employee_param(area_id, branch_id, first_name = "John", email = "john_doe@gmail.com")
     {
       first_name: first_name,
       last_name: "Doe",
@@ -160,7 +160,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
     assert_includes @response.body, "Account already exists with the email"
   end
-  
+
   test "should create employee with valid parameters" do
     post "/auth/register", params: employee_param(@area.id, @branch.id, first_name="Paul", email="tester@yahoo.com")
 
@@ -187,7 +187,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
   def simulate_cognito_error(error_type, error_message, error_code)
     @mock_cognito_service.stubs(:register_user).raises(error_type.new(error_message, error_code))
 
-    post '/auth/register', params: admin_param(@area.id, @branch.id, user_type="manager", first_name="Henry", email="test-email@gmail.io")
+    post "/auth/register", params: admin_param(@area.id, @branch.id, user_type="manager", first_name="Henry", email="test-email@gmail.io")
 
     assert_response :bad_request
     response_data = JSON.parse(@response.body)

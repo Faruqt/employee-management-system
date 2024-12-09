@@ -209,7 +209,7 @@ class PasswordsController < ApplicationController
 
     def check_user_exists
         email = params[:email]
-    
+
         user = Employee.find_by(email: email)
         if !user
             user = Admin.find_by(email: email)
@@ -246,24 +246,24 @@ class PasswordsController < ApplicationController
             # check if the admin is a manager or a director
             unless admin.is_manager || admin.is_director || admin.is_super_admin
                 Rails.logger.error("#{current_user_email} tried to reset the password of an employee")
-                return render_error("You are not authorized to reset the password of an employee", :unauthorized)
+                render_error("You are not authorized to reset the password of an employee", :unauthorized)
             end
 
         elsif user_type == "manager"
             # check if the admin is a director or a super admin
             unless admin.is_director || admin.is_super_admin
                 Rails.logger.error("#{current_user_email} tried to reset the password of a manager")
-                return render_error("You are not authorized to reset the password of a manager", :unauthorized)
+                render_error("You are not authorized to reset the password of a manager", :unauthorized)
             end
 
         elsif user_type == "director"
             # check if the admin is a super admin
             unless admin.is_super_admin
                 Rails.logger.error("#{current_user_email} tried to reset the password of a director")
-                return render_error("You are not authorized to reset the password of a director", :unauthorized)
+                render_error("You are not authorized to reset the password of a director", :unauthorized)
             end
-        else 
-            return render_error("The user type you provided is invalid. Please provide a valid user type: 'employee', 'manager', or 'director'.", :bad_request)
+        else
+            render_error("The user type you provided is invalid. Please provide a valid user type: 'employee', 'manager', or 'director'.", :bad_request)
         end
     end
 

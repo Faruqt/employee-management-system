@@ -1,7 +1,6 @@
 require "test_helper"
 
 class SessionsControllerTest < ActionDispatch::IntegrationTest
-
   def setup
     @login_path = "/auth/login"
     @logout_path = "/auth/logout"
@@ -17,7 +16,6 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     { email: "some-email", password: "password", error: "Invalid email address" }
     ].each do |params|
         define_method("test_should_return_bad_request_if_missing_required_parameters_#{params[:email]}_#{params[:password]}") do
-            
             post @login_path, params: { email: params[:email], password: params[:password] }
             assert_response :bad_request
             response_data = JSON.parse(response.body)
@@ -27,7 +25,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     end
 
   test "should log in successfully as employee" do
-    post @login_path, params: { email: @employee1.email, password: "password"}
+    post @login_path, params: { email: @employee1.email, password: "password" }
     assert_response :ok
     response_data = JSON.parse(response.body)
 
@@ -52,7 +50,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   [
   { user_type: "manager" },
-  { user_type: "director"},
+  { user_type: "director" },
   { user_type: "super_admin" }
   ].each do |user_info|
         define_method("test_should_log_in_successfully_as_#{user_info[:user_type]}") do
@@ -65,7 +63,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
                 user = @super_admin
             end
 
-            post @login_path, params: { email: user.email, password: "password", user_type: user_type}
+            post @login_path, params: { email: user.email, password: "password", user_type: user_type }
             assert_response :ok
 
             response_data = JSON.parse(response.body)
@@ -163,5 +161,4 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
         assert_equal "An error occurred while logging out, please try again", response_data["error"]
     end
-
 end

@@ -35,7 +35,7 @@ module ActiveSupport
       # Stub the set_new_password method to return a successful response
       @mock_cognito_service.stubs(:set_new_password).returns(true)
 
-      #stub the verify email method to return a successful response
+      # stub the verify email method to return a successful response
       @mock_cognito_service.stubs(:verify_email).returns(true)
 
       # stub the request_password_reset method to return a successful response
@@ -52,7 +52,6 @@ module ActiveSupport
 
       # Mock the CognitoService initialization to return the mock object
       CognitoService.stubs(:new).returns(@mock_cognito_service)
-
     end
 
     def setup_cognito_mock_for_authentication(email)

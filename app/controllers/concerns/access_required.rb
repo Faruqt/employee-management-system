@@ -11,7 +11,6 @@ module AccessRequired
   private
 
   def authenticate_user!
-
     access_token = request.headers["Authorization"]&.split(" ")&.last
 
     # Check if Authorization header exists

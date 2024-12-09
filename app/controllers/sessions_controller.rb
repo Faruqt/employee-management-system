@@ -84,7 +84,6 @@ class SessionsController < ApplicationController
 
   # Ensure email and password are provided
   def check_params
-
     unless params[:email] && params[:password]
       render json: { error: "Email and password are required" }, status: :bad_request
       return
@@ -102,7 +101,7 @@ class SessionsController < ApplicationController
 
     unless Utils::EmailValidator.valid?(params[:email])
       render json: { error: "Invalid email address" }, status: :bad_request
-      return
+      nil
     end
   end
 

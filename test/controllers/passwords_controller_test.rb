@@ -13,10 +13,10 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
   end
 
     [
-    { email: "", new_password: "", session_code:"", error: "Email, new password, and session code are required" },
-    { email: "employee@yahoo.com", new_password: "", session_code:"", error: "Email, new password, and session code are required"},
-    { email: "", new_password: "password", session_code:"12345", error: "Email, new password, and session code are required"},
-    { email: "some-email", new_password: "password", session_code:"12345", error: "The email provided is invalid. Please provide a valid email address."},
+    { email: "", new_password: "", session_code: "", error: "Email, new password, and session code are required" },
+    { email: "employee@yahoo.com", new_password: "", session_code: "", error: "Email, new password, and session code are required" },
+    { email: "", new_password: "password", session_code: "12345", error: "Email, new password, and session code are required" },
+    { email: "some-email", new_password: "password", session_code: "12345", error: "The email provided is invalid. Please provide a valid email address." }
     ].each do |params|
       define_method("test_should_return_bad_request_if_missing_required_parameters_#{params[:email]}_#{params[:new_password]}_#{params[:session_code]}") do
         post @set_new_password_path, params: { email: params[:email], new_password: params[:new_password], session_code: params[:session_code] }
@@ -37,7 +37,7 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
 
       [
     { email: "",  error: "Email is required" },
-    { email: "some-email", error: "The email provided is invalid. Please provide a valid email address."},
+    { email: "some-email", error: "The email provided is invalid. Please provide a valid email address." }
     ].each do |params|
       define_method("test_should_return_bad_request_if_missing_required_parameters_#{params[:email]}") do
         post @request_password_reset_path, params: { email: params[:email] }
@@ -57,10 +57,10 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     end
 
         [
-    { email: "", new_password: "", confirmation_code:"", error: "Email, new password, and confirmation code are required" },
-    { email: "employee@yahoo.com", new_password: "", confirmation_code:"", error: "Email, new password, and confirmation code are required"},
-    { email: "", new_password: "password", confirmation_code:"12345", error: "Email, new password, and confirmation code are required"},
-    { email: "some-email", new_password: "password", confirmation_code:"12345", error: "The email provided is invalid. Please provide a valid email address."},
+    { email: "", new_password: "", confirmation_code: "", error: "Email, new password, and confirmation code are required" },
+    { email: "employee@yahoo.com", new_password: "", confirmation_code: "", error: "Email, new password, and confirmation code are required" },
+    { email: "", new_password: "password", confirmation_code: "12345", error: "Email, new password, and confirmation code are required" },
+    { email: "some-email", new_password: "password", confirmation_code: "12345", error: "The email provided is invalid. Please provide a valid email address." }
     ].each do |params|
       define_method("test_should_return_bad_request_if_missing_required_parameters_#{params[:email]}_#{params[:new_password]}_#{params[:confirmation_code]}") do
         post @reset_password_path, params: { email: params[:email], new_password: params[:new_password], confirmation_code: params[:confirmation_code] }
@@ -71,22 +71,21 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
         end
     end
 
-    test "should_reset_password_successfully" do  
+    test "should_reset_password_successfully" do
       post @reset_password_path, params: { email: @employee1.email, new_password: "new_password", confirmation_code: "12345" }
       assert_response :ok
       response_data = JSON.parse(response.body)
 
       assert_equal "Password reset successfully", response_data["message"]
     end
-    
+
             [
-    { email: "", new_password: "", user_type:"manager", error: "Email and new password are required"},
-    { email: "employee@yahoo.com", new_password: "password", user_type:"", error: "User type is required"},
-    { email: "john", new_password: "password", user_type:"some-user-type", error: "The user type you provided is invalid. Please provide a valid user type: 'employee', 'manager', or 'director'."},
-    { email: "some-email", new_password:"some-password", user_type:"director", error: "The email provided is invalid. Please provide a valid email address."},
+    { email: "", new_password: "", user_type: "manager", error: "Email and new password are required" },
+    { email: "employee@yahoo.com", new_password: "password", user_type: "", error: "User type is required" },
+    { email: "john", new_password: "password", user_type: "some-user-type", error: "The user type you provided is invalid. Please provide a valid user type: 'employee', 'manager', or 'director'." },
+    { email: "some-email", new_password: "some-password", user_type: "director", error: "The email provided is invalid. Please provide a valid email address." }
     ].each do |params|
       define_method("test_should_return_bad_request_if_missing_required_parameters_#{params[:email]}_#{params[:new_password]}_#{params[:user_type]}") do
-        
         setup_cognito_mock_for_authentication(@manager1.email)
         session = setup_authenticated_session(@manager1)
 
@@ -109,7 +108,7 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
       access_token = session[:access_token]
 
       post @admin_reset_password_path, params: { email: "johnQ@gmail.co", new_password: "new_password", user_type: "manager" }, headers: { "Authorization" => "Bearer #{access_token}" }
-      
+
       assert_response :unauthorized
       response_data = JSON.parse(response.body)
 
@@ -117,12 +116,11 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     end
 
     [
-    { user_type:"manager", error: "You are not authorized to reset the password of a manager"},
-    { user_type:"director", error: "You are not authorized to reset the password of a director"},
-    { user_type:"super_admin", error: "The user type you provided is invalid. Please provide a valid user type: 'employee', 'manager', or 'director'."},
+    { user_type: "manager", error: "You are not authorized to reset the password of a manager" },
+    { user_type: "director", error: "You are not authorized to reset the password of a director" },
+    { user_type: "super_admin", error: "The user type you provided is invalid. Please provide a valid user type: 'employee', 'manager', or 'director'." }
     ].each do |params|
       define_method("test_manager_cannot_reset_password_for_#{params[:user_type]}") do
-        
         setup_cognito_mock_for_authentication(@manager1.email)
         session = setup_authenticated_session(@manager1)
 
@@ -155,11 +153,10 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
       end
 
     [
-    { user_type:"director", error: "You are not authorized to reset the password of a director"},
-    { user_type:"super_admin", error: "The user type you provided is invalid. Please provide a valid user type: 'employee', 'manager', or 'director'."},
+    { user_type: "director", error: "You are not authorized to reset the password of a director" },
+    { user_type: "super_admin", error: "The user type you provided is invalid. Please provide a valid user type: 'employee', 'manager', or 'director'." }
     ].each do |params|
       define_method("test_director_cannot_reset_password_for_#{params[:user_type]}") do
-        
         setup_cognito_mock_for_authentication(@director1.email)
         session = setup_authenticated_session(@director1)
 
@@ -190,12 +187,11 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
       end
 
           [
-    { user_type:"manager"},
-    { user_type:"director"},
-    { user_type:"super_admin"},
+    { user_type: "manager" },
+    { user_type: "director" },
+    { user_type: "super_admin" }
     ].each do |params|
       define_method("test_#{params[:user_type]}_can_reset_password_for_employee") do
-
         user_type = params[:user_type]
         if user_type == "manager"
           user = @manager1
@@ -220,11 +216,10 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     end
 
           [
-    { user_type:"director"},
-    { user_type:"super_admin"},
+    { user_type: "director" },
+    { user_type: "super_admin" }
     ].each do |params|
       define_method("test_#{params[:user_type]}_can_reset_password_for_managers") do
-
         user_type = params[:user_type]
         if user_type == "director"
           user = @director1
@@ -261,13 +256,12 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     end
 
               [
-    {user_type: "employee"},
-    {user_type: "manager"},
-    { user_type:"director"},
-    { user_type:"super_admin"},
+    { user_type: "employee" },
+    { user_type: "manager" },
+    { user_type: "director" },
+    { user_type: "super_admin" }
     ].each do |params|
         define_method("test_should_return_bad_request_if_missing_required_parameters_#{params[:user_type]}") do
-
         user_type = params[:user_type]
         if user_type == "employee"
           user = @employee1
@@ -292,15 +286,14 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
         assert_equal "Old password and new password are required",  response_data["error"]
         end
     end
-  
+
                 [
-    {user_type: "employee"},
-    {user_type: "manager"},
-    { user_type:"director"},
-    { user_type:"super_admin"},
+    { user_type: "employee" },
+    { user_type: "manager" },
+    { user_type: "director" },
+    { user_type: "super_admin" }
     ].each do |params|
         define_method("test_should_return_not_authorised_without_authentication_#{params[:user_type]}") do
-
         user_type = params[:user_type]
         if user_type == "employee"
           user = @employee1
@@ -319,16 +312,15 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
         response_data = JSON.parse(response.body)
 
         assert_equal "Missing Authorization Header", response_data["message"]
-
         end
     end
 
 
           [
-    {user_type: "employee"},
-    {user_type: "manager"},
-    { user_type:"director"},
-    { user_type:"super_admin"},
+    { user_type: "employee" },
+    { user_type: "manager" },
+    { user_type: "director" },
+    { user_type: "super_admin" }
     ].each do |params|
       define_method("test_#{params[:user_type]}_can_change_their_password") do
           user_type = params[:user_type]
@@ -341,17 +333,17 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
           else
             user = @super_admin
           end
-  
+
           setup_cognito_mock_for_authentication(user.email)
           session = setup_authenticated_session(user)
-  
+
           # Get the access token from the session data
           access_token = session[:access_token]
-  
+
           post @change_password_path, params: { old_password: "password", new_password: "new_password" }, headers: { "Authorization" => "Bearer #{access_token}" }
           assert_response :ok
           response_data = JSON.parse(response.body)
-  
+
           assert_equal "Password changed successfully", response_data["message"]
         end
       end
