@@ -1,8 +1,15 @@
 class SessionsController < ApplicationController
   # Check if email, password are present before trying to log in
   before_action :check_params, only: [ :create ]
+
   # Set up the Cognito service
   before_action :set_cognito_service
+
+  # Check if the headers are present before trying to refresh the token
+  before_action :check_token_refresh_request_header, only: [ :refresh_token ]
+
+  # Check if the headers are present before trying to revoke the token
+  before_action :check_token_revoke_request_header, only: [ :destroy ]
 
   # POST /login
   def create
@@ -32,8 +39,14 @@ class SessionsController < ApplicationController
       # On successful authentication, return tokens and user info
       access_token = response.authentication_result.access_token
       refresh_token = response.authentication_result.refresh_token
+
+      # Get the user id from cognito
+      cognito_user = @cognito_service.get_user(access_token)
+      sub_id  = cognito_user.username
+
       render json: { access_token: access_token,
                       refresh_token: refresh_token,
+                      sub_id: sub_id,
                       user: user.public_attributes,
          message: "Logged in successfully" }, status: :ok
     rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
@@ -44,23 +57,49 @@ class SessionsController < ApplicationController
       render json: { error: "An error occurred while logging in, please try again" }, status: :internal_server_error
     end
   end
+  
+  # GET /auth/refresh_token
+  def refresh_token
+
+    tokens = retrieve_token_from_header(request, "refresh") 
+    return unless tokens
+    # sub id
+    sub_id = tokens[:sub_id]
+    # refresh token
+    refresh_token = tokens[:refresh_token]
+
+    begin
+      response = @cognito_service.refresh_token(refresh_token, sub_id)
+
+      # if the response contains a challenge, the user needs to respond to it
+      if response.challenge_name
+        render json: { error: "User needs to respond to challenge: #{response.challenge_name}",
+        session_code: response.session, challenge_name: response.challenge_name }, status: :unauthorized
+        return
+      end
+
+      # On successful authentication, return tokens and user info
+      access_token = response.authentication_result.access_token
+
+      render json: { access_token: access_token, message: "Token refreshed successfully" }, status: :ok
+    rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
+      Rails.logger.error("Error refreshing token: #{e.message}")
+      handle_cognito_error(e)
+      return
+    rescue StandardError => e
+      Rails.logger.error("Unexpected error: #{e.message}")
+      render json: { error: "An error occurred while refreshing token, please try again" }, status: :internal_server_error
+    end
+  end
+
 
   # DELETE /logout
   def destroy
-    # check authorization header
-    if request.headers["Authorization"].blank?
-      render json: { message: "Missing Authorization Header" }, status: :unauthorized
-      return
-    end
 
-    # get the access token from the header
-    access_token = request.headers["Authorization"].split(" ")
-    # check length of access token
-    access_token = access_token.length > 1 ? access_token[1] : nil
-    unless access_token
-      render json: { message: "Missing Authorization Header" }, status: :unauthorized
-      return
-    end
+    tokens = retrieve_token_from_header(request, "logout")  
+    return unless tokens
+  
+    access_token = tokens[:access_token]
 
     begin
       # revoke the token
@@ -80,6 +119,64 @@ class SessionsController < ApplicationController
   # Set up the Cognito service for the controller actions
   def set_cognito_service
     @cognito_service = CognitoService.new
+  end
+
+  def retrieve_token_from_header(request, action)
+    # Retrieve the access token from the Authorization header
+    access_token = request.headers["Authorization"].split(" ")
+    access_token = access_token.length > 1 ? access_token[1] : nil
+    unless access_token
+      render json: { message: "Missing Authorization Header" }, status: :unauthorized
+      return
+    end
+
+    # If the action is "refresh", also retrieve the refresh token
+    refresh_token = nil
+    if action == "refresh"
+      refresh_token = request.headers["Refresh-Authorization"].split(" ")
+      refresh_token = refresh_token.length > 1 ? refresh_token[1] : nil
+      unless refresh_token
+        render json: { message: "Missing Refresh Authorization Header" }, status: :unauthorized
+        return
+      end
+
+      # check if the user sub id is present
+      sub_id = request.headers["Sub-Id"]
+      unless sub_id
+        render json: { message: "Missing sub id" }, status: :unauthorized
+        return
+      end
+    end
+
+    { access_token: access_token, refresh_token: refresh_token , sub_id: sub_id } 
+  end
+
+  # Check if the headers are present before trying to refresh the token
+  def check_token_refresh_request_header
+    # check authorization header
+    if request.headers["Authorization"].blank?
+      render json: { message: "Missing Authorization Header" }, status: :unauthorized
+      return
+    end
+
+    if request.headers["Refresh-Authorization"].blank?
+      render json: { message: "Missing Refresh Authorization Header" }, status: :unauthorized
+      return
+    end
+
+    if request.headers["Sub-Id"].blank?
+      render json: { message: "Missing Sub-Id Header" }, status: :unauthorized
+      return
+    end
+  end
+
+  # Check if the headers are present before trying to revoke the token
+  def check_token_revoke_request_header
+    # check authorization header
+    if request.headers["Authorization"].blank?
+      render json: { message: "Missing Authorization Header" }, status: :unauthorized
+      return
+    end
   end
 
   # Ensure email and password are provided
@@ -121,7 +218,7 @@ class SessionsController < ApplicationController
       render json: { error: "Invalid password" }, status: :unauthorized
     else
       # For any other unexpected Cognito error, or if error is not related to Cognito
-      render json: { error: "An error occurred while logging in, please try again" }, status: :internal_server_error
+      render json: { error: "An unexpected error occurred, please try again" }, status: :internal_server_error
     end
   end
 end

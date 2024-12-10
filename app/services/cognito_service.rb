@@ -9,6 +9,21 @@ class CognitoService
     @app_client_secret = ENV["COGNITO_APP_CLIENT_SECRET"]
   end
 
+  # Get a User
+  def get_user(access_token)
+    Rails.logger.info("Getting user with access token: #{access_token}")
+
+    response = @client.get_user({
+      access_token: access_token
+    })
+
+    Rails.logger.info("User retrieved successfully with access token: #{access_token}")
+    response
+  rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
+    Rails.logger.error("Error getting user: #{e.message}")
+    raise
+  end
+
   # Sign Up a User
   def register_user(email, password)
     Rails.logger.info("Attempting to create user with email: #{email}")
@@ -50,6 +65,24 @@ class CognitoService
     response
   rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
     Rails.logger.error("Error authenticating user: #{e.message}")
+    raise
+  end
+
+  # Refresh Token
+  def refresh_token(refresh_token, user_id)
+    response = @client.initiate_auth({
+      client_id: @app_client_id,
+      auth_flow: "REFRESH_TOKEN_AUTH",
+      auth_parameters: {
+        "REFRESH_TOKEN" => refresh_token,
+        "SECRET_HASH" => generate_secret_hash(user_id)
+      }
+    })
+
+    Rails.logger.info("Token refreshed successfully")
+    response
+  rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
+    Rails.logger.error("Error refreshing token: #{e.message}")
     raise
   end
 

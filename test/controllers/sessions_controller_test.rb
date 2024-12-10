@@ -4,6 +4,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   def setup
     @login_path = "/auth/login"
     @logout_path = "/auth/logout"
+    @refresh_token_path = "/auth/refresh_token"
 
     setup_test_data
     setup_cognito_mock
@@ -31,6 +32,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal "mock_access_token", response_data["access_token"]
     assert_equal "mock_refresh_token", response_data["refresh_token"]
+    assert_equal "mock_user_id", response_data["sub_id"]
     assert_equal @employee1.id, response_data["user"]["id"]
     assert_equal @employee1.first_name, response_data["user"]["first_name"]
     assert_equal @employee1.last_name, response_data["user"]["last_name"]
@@ -70,6 +72,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
             assert_equal "mock_access_token", response_data["access_token"]
             assert_equal "mock_refresh_token", response_data["refresh_token"]
+            assert_equal "mock_user_id", response_data["sub_id"]
             assert_equal user.id, response_data["user"]["id"]
             assert_equal user.first_name, response_data["user"]["first_name"]
             assert_equal user.last_name, response_data["user"]["last_name"]
@@ -160,5 +163,41 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
         response_data = JSON.parse(response.body)
 
         assert_equal "An error occurred while logging out, please try again", response_data["error"]
+    end
+
+        [
+    { authorization: "", refresh: "Bearer some-refresh", sub_id: "abcdefgh", error: "Missing Authorization Header" },
+    { authorization: "Bearer", refresh: "Bearer some-refresh", sub_id: "abcdefgh", error: "Missing Authorization Header" },
+    { authorization: "Bearer some-token", refresh: "", sub_id: "abcdefgh", error: "Missing Refresh Authorization Header" },
+    { authorization: "Bearer some-token", refresh: "Bearer", sub_id: "abcdefgh", error: "Missing Refresh Authorization Header" },
+    { authorization: "Bearer some-token", refresh: "Bearer some-refresh", sub_id: "", error: "Missing Sub-Id Header" },
+    ].each do |params|
+        define_method("test_should_handle_missing_headers_on_refresh_token_#{params[:authorization]}_#{params[:refresh]}_#{params[:sub_id]}") do
+            post @refresh_token_path, headers: { Authorization: params[:authorization], "Refresh-Authorization" => params[:refresh], "Sub-Id" => params[:sub_id] }
+            assert_response :unauthorized
+            response_data = JSON.parse(response.body)
+
+            assert_equal params[:error], response_data["message"]
+        end
+    end
+
+    test "should handle refresh token errors gracefully" do
+        @mock_cognito_service.stubs(:refresh_token).raises(Aws::CognitoIdentityProvider::Errors::ServiceError.new(nil, "An error occurred"))
+
+        post @refresh_token_path, headers: { Authorization: "Bearer mock_refresh_token", "Refresh-Authorization" => "Bearer mock_access_token" , "Sub-Id" => "mock_user_id" }
+        assert_response :internal_server_error
+        response_data = JSON.parse(response.body)
+
+        assert_equal "An unexpected error occurred, please try again", response_data["error"]
+    end
+
+
+    test "should refresh token successfully" do
+        post @refresh_token_path, headers: { Authorization: "Bearer mock_refresh_token", "Refresh-Authorization" => "Bearer mock_access_token" , "Sub-Id" => "mock_user_id" }
+        assert_response :ok
+        response_data = JSON.parse(response.body)
+
+        assert_equal "mock_new_access_token", response_data["access_token"]
+        assert_equal "Token refreshed successfully", response_data["message"]
     end
 end

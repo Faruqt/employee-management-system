@@ -26,6 +26,7 @@ Rails.application.routes.draw do
 
   # Defines the routes for the sessions controller
   post "auth/login" => "sessions#create"
+  post "auth/refresh_token" => "sessions#refresh_token"
   delete "auth/logout" => "sessions#destroy"
 
   # Defines the routes for the registration controller
