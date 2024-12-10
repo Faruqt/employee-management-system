@@ -29,6 +29,26 @@ module ActiveSupport
         )
       )
 
+      # Stub the get user method to return a successful response
+      @mock_cognito_service.stubs(:get_user).returns(
+        Aws::CognitoIdentityProvider::Types::GetUserResponse.new(
+          username: "mock_user_id",
+          user_attributes: [
+            Aws::CognitoIdentityProvider::Types::AttributeType.new(name: "email", value: "some-email")
+          ]
+        )
+      )
+
+      # Stub the refresh token method to return a successful response
+      @mock_cognito_service.stubs(:refresh_token).returns(
+        Aws::CognitoIdentityProvider::Types::InitiateAuthResponse.new(
+          authentication_result: Aws::CognitoIdentityProvider::Types::AuthenticationResultType.new(
+            access_token: "mock_new_access_token",
+            refresh_token: "mock_refresh_token",
+          )
+        )
+      )
+
       # Stub the logout method to return a successful response
       @mock_cognito_service.stubs(:revoke_token).returns(true)
 

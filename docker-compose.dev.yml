@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   backend:
-    container_name: shift-management-system
+    container_name: employee-management-system
     build:
       context: .
       dockerfile: Dockerfile.dev
@@ -14,12 +14,12 @@ services:
     volumes:
       - .:/rails
     networks:
-      - shift-management-network
+      - employee-management-network
     depends_on:
       - postgres
 
   postgres:
-      container_name: shift-management-app-db
+      container_name: employee-management-app-db
       image: postgres:13.3-alpine
       restart: "unless-stopped"
       volumes:
@@ -29,14 +29,14 @@ services:
       environment:
         - POSTGRES_USER=platform_user
         - POSTGRES_PASSWORD=local_db_platform
-        - POSTGRES_DB=shift-management-app-db
+        - POSTGRES_DB=employee-management-app-db
       networks:
-            - shift-management-network
+            - employee-management-network
         
 volumes:
   postgres_data:
     driver: local
 
 networks:
-  shift-management-network:
+  employee-management-network:
     driver: bridge
