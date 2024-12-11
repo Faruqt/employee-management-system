@@ -21,9 +21,9 @@ class Employee < ApplicationRecord
             is_deleted: is_deleted,
             area: area&.public_attributes,
             branch: branch&.public_attributes,
-            date_of_birth: date_of_birth.strftime(Constants::DATE_FORMAT),
-            contract_start_date: contract_start_date.strftime(Constants::DATE_FORMAT),
-            contract_end_date: contract_end_date.strftime(Constants::DATE_FORMAT),
+            date_of_birth: date_of_birth&.strftime(Constants::DATE_FORMAT),
+            contract_start_date: contract_start_date&.strftime(Constants::DATE_FORMAT),
+            contract_end_date: contract_end_date&.strftime(Constants::DATE_FORMAT),
             created_at: created_at.strftime(Constants::DATETIME_FORMAT),
             updated_at: updated_at.strftime(Constants::DATETIME_FORMAT)
         }
