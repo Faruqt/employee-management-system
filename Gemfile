@@ -56,15 +56,15 @@ gem "aws-sdk-cognitoidentityprovider"
 gem "aws-sdk-s3"
 
 # Use the Kaminari gem for pagination
-gem 'kaminari'
+gem "kaminari"
 
 # Use the Mocha gem for mocking and stubbing
 group :test do
-  gem 'mocha'
+  gem "mocha"
 end
 
 # Use the ChunkyPNG gem for generating QR codes
-gem 'chunky_png'
+gem "chunky_png"
 
 # Use the RQRCode gem for generating QR codes
-gem 'rqrcode'
+gem "rqrcode"

@@ -21,7 +21,6 @@
 # - DEFAULT_PER_PAGE: Default number of items per page for pagination.
 
 class OrganizationsController < ApplicationController
-
   # Include the required concerns
   include AccessRequired
   include RolesRequired
@@ -29,7 +28,7 @@ class OrganizationsController < ApplicationController
   before_action :authenticate_user!
 
   # Ensure that only super admins can access these routes
-  before_action -> { roles_required(["super_admin" ]) }
+  before_action -> { roles_required([ "super_admin" ]) }
 
   # GET /organizations
   def index

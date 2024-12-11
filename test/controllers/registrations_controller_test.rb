@@ -172,7 +172,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal "The area does not exist. Please provide a valid area id.", response_data["error"]
   end
-    
+
 
   test "should return error when email is invalid for manager" do
     access_token=authenticate_user(@director)
@@ -277,7 +277,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "123456", response_data["user"]["contract_code"]
     assert_not_nil response_data["user"]["shift_code"]
     assert_not_nil response_data["user"]["qr_code_url"]
-    assert_equal ENV["S3_USER_BUCKET_URL"] + response_data["user"]["shift_code"] + "CompanyName.png" , response_data["user"]["qr_code_url"]
+    assert_equal ENV["S3_USER_BUCKET_URL"] + response_data["user"]["shift_code"] + "CompanyName.png", response_data["user"]["qr_code_url"]
     assert_equal "654321", response_data["user"]["tax_code"]
     assert_equal "1990-01-01", response_data["user"]["date_of_birth"]
     assert_equal "2021-01-01", response_data["user"]["contract_start_date"]

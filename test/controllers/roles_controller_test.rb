@@ -137,8 +137,7 @@ class RolesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return error for missing role name" do
-
-    # Test with missing role name
+        # Test with missing role name
         access_token=authenticate_user(@manager)
 
     post roles_url, params: { symbol: "Role Four Symbol", area_id: @area.id }, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
@@ -149,7 +148,6 @@ class RolesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return error for missing role symbol" do
-
     # Test with missing role symbol
     access_token=authenticate_user(@manager)
 
@@ -161,7 +159,6 @@ class RolesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return error if name already exists in that area" do
-
     # Test with existing role name
     access_token=authenticate_user(@manager)
 
@@ -173,7 +170,6 @@ class RolesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create role wth same name in a different area" do
-
     # Test with same role name in a different area
     access_token=authenticate_user(@manager)
 

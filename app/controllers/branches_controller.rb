@@ -1,35 +1,34 @@
 # BranchesController handles CRUD operations for Branches.
-# 
+#
 # Actions:
 # - index: Fetches a paginated list of branches.
 # - show: Fetches details of a specific branch by ID.
 # - create: Creates a new branch.
 # - update: Updates an existing branch by ID.
 # - destroy: Deletes a branch by ID.
-# 
+#
 # Before Actions:
 # - authenticate_user!: Ensures the user is authenticated.
 # - roles_required(["super_admin"]): Ensures only super admins can access these routes.
-# 
+#
 # Methods:
-# - index: 
+# - index:
 #   - Params: page (optional), per_page (optional)
 #   - Returns: JSON response with paginated branches and metadata.
-# - show: 
+# - show:
 #   - Params: id (required)
 #   - Returns: JSON response with branch details or error message.
-# - create: 
+# - create:
 #   - Params: name (required), address (optional), organization_id (required), areas_ids (optional)
 #   - Returns: JSON response with created branch details or error message.
-# - update: 
+# - update:
 #   - Params: id (required), name (required), address (optional), areas_ids (optional)
 #   - Returns: JSON response with updated branch details or error message.
-# - destroy: 
+# - destroy:
 #   - Params: id (required)
 #   - Returns: JSON response with success message or error message.
 
 class BranchesController < ApplicationController
-
   # Include the required concerns
   include AccessRequired
   include RolesRequired
@@ -37,7 +36,7 @@ class BranchesController < ApplicationController
   before_action :authenticate_user!
 
   # Ensure that only super admins can access these routes
-  before_action -> { roles_required(["super_admin"]) }
+  before_action -> { roles_required([ "super_admin" ]) }
 
   # GET /branches
   def index

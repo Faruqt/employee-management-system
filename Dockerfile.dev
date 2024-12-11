@@ -36,5 +36,5 @@ RUN bundle exec bootsnap precompile app/ lib/
 # Expose the development port
 EXPOSE 3000
 
-# run the startup script "startupDev.sh"
-CMD ["/bin/bash", "startupDev.sh"]
+# run the startup script "startup-dev.sh"
+CMD ["/bin/bash", "startup-dev.sh"]

@@ -1,14 +1,14 @@
 # lib/utils/qr_code_generator.rb
 
-require 'rqrcode'
-require 'chunky_png'
-require 'base64'
+require "rqrcode"
+require "chunky_png"
+require "base64"
 
 module Utils
     module QrCodeGenerator
         def self.generate_qr_code(employee_id)
             # Path to the logo image (ensure this path is correct for your environment)
-            logo_path = Rails.root.join('app/assets/images/company_logo.png')
+            logo_path = Rails.root.join("app/assets/images/company_logo.png")
 
             # Generate QR code
             qr = RQRCode::QRCode.new(employee_id, level: :h, size: 10)

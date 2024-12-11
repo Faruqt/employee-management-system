@@ -30,5 +30,5 @@ RUN bundle exec bootsnap precompile app/ lib/
 # Expose any necessary test ports
 EXPOSE 3000
 
-# run the startup script "startupTest.sh"
-CMD ["/bin/bash", "startupTest.sh"]
+# run the startup script "startup-test.sh"
+CMD ["/bin/bash", "startup-test.sh"]

@@ -84,11 +84,10 @@ class SessionsController < ApplicationController
       render json: { error: "An error occurred while logging in, please try again" }, status: :internal_server_error
     end
   end
-  
+
   # GET /auth/refresh_token
   def refresh_token
-
-    tokens = retrieve_token_from_header(request, "refresh") 
+    tokens = retrieve_token_from_header(request, "refresh")
     return unless tokens
     # sub id
     sub_id = tokens[:sub_id]
@@ -112,7 +111,7 @@ class SessionsController < ApplicationController
     rescue Aws::CognitoIdentityProvider::Errors::ServiceError => e
       Rails.logger.error("Error refreshing token: #{e.message}")
       handle_cognito_error(e)
-      return
+      nil
     rescue StandardError => e
       Rails.logger.error("Unexpected error: #{e.message}")
       render json: { error: "An error occurred while refreshing token, please try again" }, status: :internal_server_error
@@ -122,10 +121,9 @@ class SessionsController < ApplicationController
 
   # DELETE /logout
   def destroy
-
-    tokens = retrieve_token_from_header(request, "logout")  
+    tokens = retrieve_token_from_header(request, "logout")
     return unless tokens
-  
+
     access_token = tokens[:access_token]
 
     begin
@@ -175,7 +173,7 @@ class SessionsController < ApplicationController
       end
     end
 
-    { access_token: access_token, refresh_token: refresh_token , sub_id: sub_id } 
+    { access_token: access_token, refresh_token: refresh_token, sub_id: sub_id }
   end
 
   # Check if the headers are present before trying to refresh the token
@@ -193,7 +191,7 @@ class SessionsController < ApplicationController
 
     if request.headers["Sub-Id"].blank?
       render json: { message: "Missing Sub-Id Header" }, status: :unauthorized
-      return
+      nil
     end
   end
 
@@ -202,7 +200,7 @@ class SessionsController < ApplicationController
     # check authorization header
     if request.headers["Authorization"].blank?
       render json: { message: "Missing Authorization Header" }, status: :unauthorized
-      return
+      nil
     end
   end
 

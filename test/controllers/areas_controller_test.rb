@@ -196,7 +196,6 @@ class AreasControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update area with valid parameters" do
-
     access_token=authenticate_user(@super_admin)
     patch area_url(@area2), params: { name: "Updated Area", color: "Updated Color" }, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
     assert_response :success
@@ -209,7 +208,6 @@ class AreasControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return error when name is missing during update" do
-
     access_token=authenticate_user(@super_admin)
     patch area_url(@area2), params: { color: "Updated Color" }, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
     assert_response :bad_request
@@ -219,7 +217,6 @@ class AreasControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return error when color is missing during update" do
-
     access_token=authenticate_user(@director)
     patch area_url(@area2), params: { name: "Updated Area" }, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
     assert_response :bad_request

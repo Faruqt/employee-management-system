@@ -1,9 +1,9 @@
 # AreasController handles CRUD operations for Area resources.
-# 
+#
 # Includes:
 # - AccessRequired: Ensures access control.
 # - RolesRequired: Ensures role-based access control.
-# 
+#
 # Actions:
 # - index: Fetches a paginated list of areas.
 # - show: Fetches details of a specific area by ID.
@@ -14,7 +14,7 @@
 # Before Actions:
 # - authenticate_user!: Ensures user is authenticated.
 # - roles_required(["super_admin", "director"]): Ensures only super admins and directors can access these routes.
-# 
+#
 # Rescue From:
 # - StandardError: Logs unexpected errors and returns a 500 internal server error.
 # - ActiveRecord::RecordInvalid: Handles validation errors during create and update actions.
@@ -25,7 +25,6 @@
 
 
 class AreasController < ApplicationController
-
   # Include the required concerns
   include AccessRequired
   include RolesRequired
@@ -33,7 +32,7 @@ class AreasController < ApplicationController
   before_action :authenticate_user!
 
   # Ensure that only super admins and directors can access these routes
-  before_action -> { roles_required(["super_admin", "director"]) }
+  before_action -> { roles_required([ "super_admin", "director" ]) }
 
   # GET /areas
   def index

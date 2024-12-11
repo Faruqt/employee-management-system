@@ -1,4 +1,4 @@
-require 'base64'
+require "base64"
 
 module Utils
     module Base64Decoder

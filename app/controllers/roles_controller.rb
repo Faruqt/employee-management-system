@@ -11,7 +11,7 @@
 # Before Actions:
 # - before_action :authenticate_user!: Ensures the user is authenticated.
 # - before_action -> { roles_required(["super_admin", "manager", "director"]) }: Ensures only super admins, managers, and directors can access these routes.
-# 
+#
 # Rescue From:
 # - StandardError: Logs unexpected errors and returns a 500 internal server error.
 # - ActiveRecord::RecordInvalid: Handles validation errors during create and update actions.
@@ -21,7 +21,6 @@
 # - DEFAULT_PER_PAGE: Default number of items per page for pagination.
 
 class RolesController < ApplicationController
-
   # Include the required concerns
   include AccessRequired
   include RolesRequired
@@ -29,7 +28,7 @@ class RolesController < ApplicationController
   before_action :authenticate_user!
 
   # Ensure all admins can access all routes
-  before_action -> { roles_required(["super_admin", "manager", "director"]) }
+  before_action -> { roles_required([ "super_admin", "manager", "director" ]) }
 
   # GET /roles
   def index

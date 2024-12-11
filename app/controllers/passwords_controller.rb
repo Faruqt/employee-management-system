@@ -36,7 +36,7 @@
 # - `check_who_can_reset_password`: Ensures the user has the appropriate role to reset another user's password.
 # - `render_error`: Renders an error message with a specified status.
 # - `handle_cognito_error`: Handles errors from the Cognito service and renders appropriate error messages.
-# 
+#
 # Constants:
 # - `USER_TYPES`: Array of valid user types for admin_reset_password action.
 

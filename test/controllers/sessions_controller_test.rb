@@ -170,7 +170,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     { authorization: "Bearer", refresh: "Bearer some-refresh", sub_id: "abcdefgh", error: "Missing Authorization Header" },
     { authorization: "Bearer some-token", refresh: "", sub_id: "abcdefgh", error: "Missing Refresh Authorization Header" },
     { authorization: "Bearer some-token", refresh: "Bearer", sub_id: "abcdefgh", error: "Missing Refresh Authorization Header" },
-    { authorization: "Bearer some-token", refresh: "Bearer some-refresh", sub_id: "", error: "Missing Sub-Id Header" },
+    { authorization: "Bearer some-token", refresh: "Bearer some-refresh", sub_id: "", error: "Missing Sub-Id Header" }
     ].each do |params|
         define_method("test_should_handle_missing_headers_on_refresh_token_#{params[:authorization]}_#{params[:refresh]}_#{params[:sub_id]}") do
             post @refresh_token_path, headers: { Authorization: params[:authorization], "Refresh-Authorization" => params[:refresh], "Sub-Id" => params[:sub_id] }
@@ -184,7 +184,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     test "should handle refresh token errors gracefully" do
         @mock_cognito_service.stubs(:refresh_token).raises(Aws::CognitoIdentityProvider::Errors::ServiceError.new(nil, "An error occurred"))
 
-        post @refresh_token_path, headers: { Authorization: "Bearer mock_refresh_token", "Refresh-Authorization" => "Bearer mock_access_token" , "Sub-Id" => "mock_user_id" }
+        post @refresh_token_path, headers: { Authorization: "Bearer mock_refresh_token", "Refresh-Authorization" => "Bearer mock_access_token", "Sub-Id" => "mock_user_id" }
         assert_response :internal_server_error
         response_data = JSON.parse(response.body)
 
@@ -193,7 +193,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
 
     test "should refresh token successfully" do
-        post @refresh_token_path, headers: { Authorization: "Bearer mock_refresh_token", "Refresh-Authorization" => "Bearer mock_access_token" , "Sub-Id" => "mock_user_id" }
+        post @refresh_token_path, headers: { Authorization: "Bearer mock_refresh_token", "Refresh-Authorization" => "Bearer mock_access_token", "Sub-Id" => "mock_user_id" }
         assert_response :ok
         response_data = JSON.parse(response.body)
 

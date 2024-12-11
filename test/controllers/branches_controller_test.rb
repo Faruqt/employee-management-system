@@ -2,7 +2,6 @@ require "test_helper"
 
 class BranchesControllerTest < ActionDispatch::IntegrationTest
   def setup
-
     setup_test_data
     setup_cognito_mock
 
@@ -88,7 +87,6 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
         response_data = JSON.parse(@response.body)
 
         assert_equal "You are not authorized to perform this action", response_data["message"]
-
         end
   end
 

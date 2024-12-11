@@ -8,7 +8,6 @@ class OrganizationsControllerTest < ActionDispatch::IntegrationTest
     # Create extra test data
     @org2 = Organization.create!(name: "Organization Two", address: "Address Two")
     @org3 = Organization.create!(name: "Organization Three", address: "Address Three")
-
   end
 
   def get_user_by_user_type(user_type)
@@ -82,7 +81,6 @@ class OrganizationsControllerTest < ActionDispatch::IntegrationTest
         response_data = JSON.parse(@response.body)
 
         assert_equal "You are not authorized to perform this action", response_data["message"]
-
         end
       end
 
@@ -90,7 +88,6 @@ class OrganizationsControllerTest < ActionDispatch::IntegrationTest
     { user_type: "super_admin" }
     ].each do |params|
         define_method "test_should_return_custom_paginated_organizations_for_#{params[:user_type]}" do
-
         user_type = params[:user_type]
 
         user = get_user_by_user_type(user_type)
@@ -122,7 +119,6 @@ class OrganizationsControllerTest < ActionDispatch::IntegrationTest
     { user_type: "super_admin" }
     ].each do |params|
         define_method "test_should_return_empty_organizations_list_for_#{params[:user_type]}" do
-
         user_type = params[:user_type]
 
         user = get_user_by_user_type(user_type)
@@ -152,7 +148,6 @@ class OrganizationsControllerTest < ActionDispatch::IntegrationTest
     { user_type: "super_admin" }
     ].each do |params|
         define_method "test_should_return_correct_pagination_urls_for_#{params[:user_type]}" do
-
         user_type = params[:user_type]
 
         user = get_user_by_user_type(user_type)
@@ -190,7 +185,6 @@ class OrganizationsControllerTest < ActionDispatch::IntegrationTest
     { user_type: "manager" }
     ].each do |params|
         define_method "test_should_return_unauthorized_for_#{params[:user_type]}" do
-
         user_type = params[:user_type]
 
         user = get_user_by_user_type(user_type)
@@ -210,7 +204,6 @@ class OrganizationsControllerTest < ActionDispatch::IntegrationTest
         response_data = JSON.parse(@response.body)
 
         assert_equal "You are not authorized to perform this action", response_data["message"]
-
       end
   end
 

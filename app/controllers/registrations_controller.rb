@@ -36,7 +36,7 @@
 # Constants:
 # - Constants::USER_TYPES: A list of valid user types ('employee', 'manager', 'director').
 
-require 'securerandom'
+require "securerandom"
 
 class RegistrationsController < ApplicationController
   # Include the required concerns
@@ -117,13 +117,13 @@ class RegistrationsController < ApplicationController
 
         # Create the user in the database
         user = case user_type
-              when "employee"
+        when "employee"
                 create_employee(attributes)
-              when "director", "manager"
+        when "director", "manager"
                 create_admin(attributes, user_type)
-              else
+        else
                 raise "Unknown user type"
-              end
+        end
 
         # Call cognito service to register the user
         cognito_response = @cognito_service.register_user(attributes[:email], password)
@@ -180,13 +180,13 @@ class RegistrationsController < ApplicationController
       employee.qr_code_url = qr_code_url
 
       employee.save!
-    
+
     rescue ActiveRecord::RecordInvalid => e
       Rails.logger.error("Error creating employee: #{e.message}")
       raise "Employee creation failed: #{e.message}"
     rescue StandardError => e
       Rails.logger.error("Error creating employee: #{e.message}")
-      raise "Employee creation failed: #{e.message}"    
+      raise "Employee creation failed: #{e.message}"
     end
 
     employee
@@ -341,14 +341,14 @@ class RegistrationsController < ApplicationController
       end
     end
   end
-  
+
   def render_error(message, status = :bad_request)
       render json: { error: message }, status: status
   end
 
   def generate_qr_code(employee, user_name)
     begin
-      
+
       # Generate the QR code base64 string
       qr_code_base64_img = Utils::QrCodeGenerator.generate_qr_code(user_name)
 
