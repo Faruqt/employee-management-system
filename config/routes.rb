@@ -48,7 +48,8 @@ Rails.application.routes.draw do
   # Admin can reset a user's password
   post "auth/admin/password/reset", to: "passwords#admin_reset_password"
 
-  # resources :users, only: %i[create show update]
+  # Defines the routes for the profile controller
+  get "profile" => "profile#index"
 
   # Catch-all route for undefined paths
   match "*path", to: "application#route_not_found", via: :all
