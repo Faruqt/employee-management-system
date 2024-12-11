@@ -1,5 +1,6 @@
 ENV["RAILS_ENV"] ||= "test"
 ENV["AWS_REGION"] = "some-region"
+ENV["S3_USER_BUCKET_URL"] = "https://some-bucket-url"
 require_relative "../config/environment"
 require "rails/test_help"
 require "mocha/minitest"
@@ -90,6 +91,17 @@ module ActiveSupport
 
       # Inject the mock into your app's AWS client
       Aws::CognitoIdentityProvider::Client.stubs(:new).returns(@mock_cognito_client)
+    end
+
+    def setup_s3_mock_for_upload
+      # Create a mock of S3 client
+      @mock_s3_client = mock("FileUploadService")
+
+      # Stub the put_object method to return a successful response
+      @mock_s3_client.stubs(:upload_file).returns(true)
+
+      # Mock the FileUploadService initialization to return the mock object
+      FileUploadService.stubs(:new).returns(@mock_s3_client)
     end
 
     def setup_test_data
