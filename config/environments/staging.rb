@@ -72,7 +72,7 @@ Rails.application.configure do
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
   # config.active_job.queue_adapter = :resque
-  # config.active_job.queue_name_prefix = "shift_management_system_staging"
+  # config.active_job.queue_name_prefix = "employee_management_system_staging"
 
   # Disable caching for Action Mailer templates even if Action Controller
   # caching is enabled.
