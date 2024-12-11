@@ -62,3 +62,9 @@ gem 'kaminari'
 group :test do
   gem 'mocha'
 end
+
+# Use the ChunkyPNG gem for generating QR codes
+gem 'chunky_png'
+
+# Use the RQRCode gem for generating QR codes
+gem 'rqrcode'
