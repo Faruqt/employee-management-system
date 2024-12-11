@@ -11,6 +11,6 @@ class WelcomeControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     # Assert that the response body contains the welcome text
-    assert_equal "Welcome to the shift management system API! Your request was successful.", response.parsed_body["message"]
+    assert_equal "Welcome to the employee management system API! Your request was successful.", response.parsed_body["message"]
   end
 end
