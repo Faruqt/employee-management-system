@@ -36,7 +36,6 @@ class OrganizationsControllerTest < ActionDispatch::IntegrationTest
   end
 
     [
-    { user_type: "director" },
     { user_type: "super_admin" }
     ].each do |params|
         define_method "test_should_return_default_paginated_organizations_for_#{params[:user_type]}" do
@@ -62,25 +61,32 @@ class OrganizationsControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    test "should return error for unauthorized user" do
-    # Test with an unauthorized user
-    setup_cognito_mock_for_authentication(@manager.email)
-    session = setup_authenticated_session(@manager)
+            [
+    { user_type: "director" },
+    { user_type: "manager" }
+    ].each do |params|
+      define_method "test_should_return_error_for_#{params[:user_type]}" do
+        user_type = params[:user_type]
 
-    # Get the access token from the session data
-    access_token = session[:access_token]
+        user = get_user_by_user_type(user_type)
+        # Test with an unauthorized user
+        setup_cognito_mock_for_authentication(user.email)
+        session = setup_authenticated_session(user)
 
-    get organizations_url, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
+        # Get the access token from the session data
+        access_token = session[:access_token]
 
-    assert_response :unauthorized
-    response_data = JSON.parse(@response.body)
+        get organizations_url, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
 
-    assert_equal "You are not authorized to perform this action", response_data["message"]
+        assert_response :unauthorized
+        response_data = JSON.parse(@response.body)
 
-    end
+        assert_equal "You are not authorized to perform this action", response_data["message"]
+
+        end
+      end
 
         [
-    { user_type: "director" },
     { user_type: "super_admin" }
     ].each do |params|
         define_method "test_should_return_custom_paginated_organizations_for_#{params[:user_type]}" do
@@ -113,7 +119,6 @@ class OrganizationsControllerTest < ActionDispatch::IntegrationTest
 
 
         [
-    { user_type: "director" },
     { user_type: "super_admin" }
     ].each do |params|
         define_method "test_should_return_empty_organizations_list_for_#{params[:user_type]}" do
@@ -144,7 +149,6 @@ class OrganizationsControllerTest < ActionDispatch::IntegrationTest
     end
 
             [
-    { user_type: "director" },
     { user_type: "super_admin" }
     ].each do |params|
         define_method "test_should_return_correct_pagination_urls_for_#{params[:user_type]}" do

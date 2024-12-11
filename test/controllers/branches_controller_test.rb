@@ -11,6 +11,19 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
     @branch2 = Branch.create!(name: "Branch-Organization 2", address: "Address Two", organization_id: @org2.id)
   end
 
+  def get_user_by_user_type(user_type)
+    case user_type
+    when "employee"
+      @employee1
+    when "manager"
+      @manager
+    when "director"
+      @director
+    when "super_admin"
+      @super_admin
+    end
+  end
+
   def authenticate_user(user)
     setup_cognito_mock_for_authentication(user.email)
 
@@ -24,7 +37,7 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
   test "should return paginated branches" do
     # Test with default pagination
 
-    access_token=authenticate_user(@director)
+    access_token=authenticate_user(@super_admin)
     get branches_url, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
     assert_response :success
 
@@ -39,7 +52,7 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should handle custom pagination parameters" do
-    access_token=authenticate_user(@director)
+    access_token=authenticate_user(@super_admin)
     # Test with custom page and per_page parameters
     get branches_url, params: { page: 1, per_page: 1 }, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
     assert_response :success
@@ -54,8 +67,33 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil meta["next_page"]
   end
 
+              [
+    { user_type: "director" },
+    { user_type: "manager" }
+    ].each do |params|
+      define_method "test_should_return_error_for_#{params[:user_type]}" do
+        user_type = params[:user_type]
+
+        user = get_user_by_user_type(user_type)
+        # Test with an unauthorized user
+        setup_cognito_mock_for_authentication(user.email)
+        session = setup_authenticated_session(user)
+
+        # Get the access token from the session data
+        access_token = session[:access_token]
+
+        get branches_url, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
+
+        assert_response :unauthorized
+        response_data = JSON.parse(@response.body)
+
+        assert_equal "You are not authorized to perform this action", response_data["message"]
+
+        end
+  end
+
   test "should return empty branches list for out-of-range page" do
-    access_token=authenticate_user(@director)
+    access_token=authenticate_user(@super_admin)
     get branches_url, params: { page: 5, per_page: 1 }, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
     assert_response :success
 
@@ -96,7 +134,7 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return error for invalid branch ID" do
-    access_token=authenticate_user(@director)
+    access_token=authenticate_user(@super_admin)
 
     non_existent_id = SecureRandom.uuid
     get branch_url(non_existent_id), as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
@@ -107,7 +145,7 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return 500 internal server error on unexpected error" do
-    access_token=authenticate_user(@director)
+    access_token=authenticate_user(@super_admin)
 
     # Simulate an unexpected error by stubbing the `find_by` method to raise an error
     Branch.stubs(:find_by).raises("Unexpected Error")
@@ -119,7 +157,7 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create a new branch" do
-    access_token=authenticate_user(@director)
+    access_token=authenticate_user(@super_admin)
 
     # Simulate a successful branch creation
     post branches_url, params: { name: "Branch-Organization 3", address: "Address Three", organization_id: @org.id }, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
@@ -146,7 +184,7 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return error if branch already exists in the organiztion" do
-    access_token=authenticate_user(@director)
+    access_token=authenticate_user(@super_admin)
 
     # Test with existing branch name
     post branches_url, params: { name: "Branch-Organization 2", address: "Address Three", organization_id: @org2.id }, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
@@ -157,7 +195,7 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update branch with valid parameters" do
-    access_token=authenticate_user(@director)
+    access_token=authenticate_user(@super_admin)
 
     # Simulate a successful branch update
     patch branch_url(@branch), params: { name: "Branch-Organization 1 Updated", address: "Address One Updated" }, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
@@ -170,7 +208,7 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return error if branch name is not provided during update" do
-    access_token=authenticate_user(@director)
+    access_token=authenticate_user(@super_admin)
 
     # Test with missing branch name
     patch branch_url(@branch), params: { address: "Address One Updated" }, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
@@ -181,7 +219,7 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return error if branch does not exist during update" do
-    access_token=authenticate_user(@director)
+    access_token=authenticate_user(@super_admin)
 
     non_existent_id = SecureRandom.uuid
     patch branch_url(non_existent_id), params: { name: "Branch-Organization 1 Updated", address: "Address One Updated" }, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
@@ -192,7 +230,7 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return error if branch with the same name already exists" do
-    access_token=authenticate_user(@director)
+    access_token=authenticate_user(@super_admin)
 
     # Test with existing branch name
     patch branch_url(@branch), params: { name: "Branch-Organization 2", address: "Address One Updated" }, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
@@ -226,7 +264,7 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return error if branch does not exist during delete" do
-    access_token=authenticate_user(@director)
+    access_token=authenticate_user(@super_admin)
 
     non_existent_id = SecureRandom.uuid
     delete branch_url(non_existent_id), as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
@@ -247,7 +285,7 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return error if delete fails due to internal server error" do
-    access_token=authenticate_user(@director)
+    access_token=authenticate_user(@super_admin)
 
     # Simulate an internal server error by stubbing the `destroy` method to raise an error
     Branch.any_instance.stubs(:destroy).raises(ActiveRecord::RecordNotDestroyed.new("Failed to delete"))

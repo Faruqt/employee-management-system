@@ -26,7 +26,7 @@ class AreasControllerTest < ActionDispatch::IntegrationTest
   test "should return paginated areas" do
     # Test with default pagination
 
-    access_token=authenticate_user(@manager)
+    access_token=authenticate_user(@director)
 
     get areas_url, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
     assert_response :success
@@ -42,9 +42,20 @@ class AreasControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Color Four", areas.first["color"]
   end
 
+  test "manager cannot list areas" do
+    access_token=authenticate_user(@manager)
+
+    post areas_url, params: { name: "Area Four", color: "Color Four" }, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
+    assert_response :unauthorized
+
+    response_data = JSON.parse(@response.body)
+
+    assert_equal "You are not authorized to perform this action", response_data["message"]
+  end
+
   test "should handle custom pagination parameters" do
     # Test with custom page and per_page parameters
-    access_token=authenticate_user(@director)
+    access_token=authenticate_user(@super_admin)
 
     get areas_url, params: { page: 1, per_page: 2 }, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
     assert_response :success
@@ -60,7 +71,7 @@ class AreasControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return empty areas list for out-of-range page" do
-    access_token=authenticate_user(@super_admin)
+    access_token=authenticate_user(@director)
 
     get areas_url, params: { page: 5, per_page: 2 }, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
     assert_response :success
@@ -75,7 +86,7 @@ class AreasControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return correct next and previous page URLs" do
-    access_token=authenticate_user(@manager)
+    access_token=authenticate_user(@super_admin)
 
     # Test the next and prev URLs
     get areas_url, params: { page: 1, per_page: 2 }, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
@@ -102,7 +113,7 @@ class AreasControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return error when invalid ID is provided" do
-    access_token=authenticate_user(@director)
+    access_token=authenticate_user(@super_admin)
 
     non_existent_id = SecureRandom.uuid
     get area_url(non_existent_id), as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
@@ -113,7 +124,7 @@ class AreasControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return 500 internal server error on unexpected error" do
-    access_token=authenticate_user(@director)
+    access_token=authenticate_user(@super_admin)
 
     # Simulate unexpected error by stubbing the Area.find_by method to raise an error
     Area.stubs(:find_by).raises(StandardError.new("Unexpected error"))
@@ -165,7 +176,7 @@ class AreasControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return error when color is missing" do
-    access_token=authenticate_user(@director)
+    access_token=authenticate_user(@super_admin)
 
     post areas_url, params: { name: "Area Four" }, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
     assert_response :bad_request
@@ -186,7 +197,7 @@ class AreasControllerTest < ActionDispatch::IntegrationTest
 
   test "should update area with valid parameters" do
 
-    access_token=authenticate_user(@director)
+    access_token=authenticate_user(@super_admin)
     patch area_url(@area2), params: { name: "Updated Area", color: "Updated Color" }, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
     assert_response :success
 
@@ -199,7 +210,7 @@ class AreasControllerTest < ActionDispatch::IntegrationTest
 
   test "should return error when name is missing during update" do
 
-    access_token=authenticate_user(@director)
+    access_token=authenticate_user(@super_admin)
     patch area_url(@area2), params: { color: "Updated Color" }, as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
     assert_response :bad_request
 
@@ -218,7 +229,7 @@ class AreasControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return error if update fails due to internal server error" do
-    access_token=authenticate_user(@director)
+    access_token=authenticate_user(@super_admin)
     # Simulate an error during area update
     Area.any_instance.stubs(:update!).raises(StandardError.new("Unexpected error"))
 
@@ -240,7 +251,7 @@ class AreasControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return error when area does not exist" do
-    access_token=authenticate_user(@director)
+    access_token=authenticate_user(@super_admin)
     non_existent_id = SecureRandom.uuid
     delete area_url(non_existent_id), as: :json, headers: { "Authorization" => "Bearer #{access_token}" }
     assert_response :not_found
