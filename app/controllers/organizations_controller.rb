@@ -7,11 +7,7 @@ class OrganizationsController < ApplicationController
   before_action :authenticate_user!
 
   # Ensure that only super admins can access these routes
-  before_action -> { roles_required(["super_admin" ]) }, only: [:show, :create, :update, :destroy]
-
-  # Ensure that only super admins and directors can access the list route
-  before_action -> { roles_required(["super_admin", "director" ]) }, only: [:index]
-
+  before_action -> { roles_required(["super_admin" ]) }
 
   # GET /organizations
   def index
