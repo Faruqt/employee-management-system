@@ -1,3 +1,30 @@
+# SessionsController handles user authentication, token refresh, and logout actions.
+# It interacts with AWS Cognito for user management and authentication.
+#
+# Actions:
+# - create: Authenticates a user with email and password, returning tokens and user info.
+# - refresh_token: Refreshes the access token using a valid refresh token.
+# - destroy: Logs out the user by revoking the access token.
+#
+# Before Actions:
+# - check_params: Ensures email and password are provided for the create action.
+# - set_cognito_service: Initializes the Cognito service for all actions.
+# - check_token_refresh_request_header: Ensures necessary headers are present for the refresh_token action.
+# - check_token_revoke_request_header: Ensures necessary headers are present for the destroy action.
+#
+# Rescue From:
+# - Aws::CognitoIdentityProvider::Errors::ServiceError: Handles specific AWS Cognito errors and renders appropriate responses.
+# - StandardError: Renders an internal server error response for unexpected errors.
+# - ActiveRecord::RecordNotFound: Renders a not found response when the user is not found.
+#
+# Private Methods:
+# - set_cognito_service: Initializes the Cognito service.
+# - retrieve_token_from_header: Retrieves tokens from request headers.
+# - check_token_refresh_request_header: Validates headers for token refresh requests.
+# - check_token_revoke_request_header: Validates headers for token revoke requests.
+# - check_params: Validates presence and format of email and password.
+# - handle_cognito_error: Handles specific AWS Cognito errors and renders appropriate responses.
+
 class SessionsController < ApplicationController
   # Check if email, password are present before trying to log in
   before_action :check_params, only: [ :create ]

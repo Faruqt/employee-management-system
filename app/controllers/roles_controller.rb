@@ -1,3 +1,25 @@
+# RolesController handles CRUD operations for Role model.
+# It ensures that only authenticated users with specific roles can access the actions.
+#
+# Actions:
+# - index: Fetches and paginates roles, returning them in JSON format.
+# - show: Fetches a specific role by ID and returns it in JSON format.
+# - create: Creates a new role with the provided parameters.
+# - update: Updates an existing role with the provided parameters.
+# - destroy: Deletes a specific role by ID.
+#
+# Before Actions:
+# - before_action :authenticate_user!: Ensures the user is authenticated.
+# - before_action -> { roles_required(["super_admin", "manager", "director"]) }: Ensures only super admins, managers, and directors can access these routes.
+# 
+# Rescue From:
+# - StandardError: Logs unexpected errors and returns a 500 internal server error.
+# - ActiveRecord::RecordInvalid: Handles validation errors during create and update actions.
+# - ActiveRecord::RecordNotDestroyed: Handles errors during the destroy action.
+#
+# Constants:
+# - DEFAULT_PER_PAGE: Default number of items per page for pagination.
+
 class RolesController < ApplicationController
 
   # Include the required concerns

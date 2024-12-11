@@ -1,3 +1,45 @@
+# PasswordsController handles password management actions such as setting a new password, requesting a password reset, resetting a password, admin resetting a password, and changing a password.
+#
+# Actions:
+# - `set_new_password`: Sets a new password for the user and verifies the email.
+# - `request_password_reset`: Requests a password reset and sends a reset code to the user's email.
+# - `reset_password`: Resets the user's password using a confirmation code.
+# - `admin_reset_password`: Allows an admin to reset another user's password.
+# - `change_password`: Changes the user's password.
+#
+# Before Actions:
+# - `authenticate_user!`: Ensures the user is authenticated for admin_reset_password and change_password actions.
+# - `roles_required`: Ensures only users with roles "director", "manager", or "super_admin" can perform admin_reset_password.
+# - `validate_set_new_password_params`: Validates parameters for set_new_password action.
+# - `validate_reset_password_params`: Validates parameters for reset_password action.
+# - `validate_admin_reset_password_params`: Validates parameters for admin_reset_password action.
+# - `validate_request_password_reset_params`: Validates parameters for request_password_reset action.
+# - `validate_change_password_params`: Validates parameters for change_password action.
+# - `check_user_exists`: Ensures the user exists for set_new_password, request_password_reset, reset_password, and admin_reset_password actions.
+# - `check_who_can_reset_password`: Ensures the user has the appropriate role to reset another user's password for admin_reset_password action.
+# - `set_cognito_service`: Sets up the Cognito service for the controller actions.
+#
+# Rescue From:
+# - `Aws::CognitoIdentityProvider::Errors::ServiceError`: Handles errors from the Cognito service and renders appropriate error messages.
+# - `StandardError`: Renders an internal server error response for unexpected errors.
+# - `ActiveRecord::RecordNotFound`: Renders a not found response when the user is not found.
+#
+# Private Methods:
+# - `set_cognito_service`: Initializes the Cognito service.
+# - `validate_set_new_password_params`: Validates parameters for set_new_password action.
+# - `validate_request_password_reset_params`: Validates parameters for request_password_reset action.
+# - `validate_reset_password_params`: Validates parameters for reset_password action.
+# - `validate_admin_reset_password_params`: Validates parameters for admin_reset_password action.
+# - `validate_change_password_params`: Validates parameters for change_password action.
+# - `check_email_is_valid`: Checks if the provided email is valid.
+# - `check_user_exists`: Checks if the user exists in the system.
+# - `check_who_can_reset_password`: Ensures the user has the appropriate role to reset another user's password.
+# - `render_error`: Renders an error message with a specified status.
+# - `handle_cognito_error`: Handles errors from the Cognito service and renders appropriate error messages.
+# 
+# Constants:
+# - `USER_TYPES`: Array of valid user types for admin_reset_password action.
+
 class PasswordsController < ApplicationController
     # Include the required concerns
     include AccessRequired

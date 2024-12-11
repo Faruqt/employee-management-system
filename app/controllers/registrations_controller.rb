@@ -36,7 +36,6 @@
 # Constants:
 # - Constants::USER_TYPES: A list of valid user types ('employee', 'manager', 'director').
 
-
 require 'securerandom'
 
 class RegistrationsController < ApplicationController

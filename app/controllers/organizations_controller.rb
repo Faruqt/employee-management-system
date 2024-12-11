@@ -1,3 +1,25 @@
+# OrganizationsController handles CRUD operations for the Organization model.
+# It includes access control and role-based restrictions to ensure only authorized users can perform actions.
+#
+# Actions:
+# - index: Fetches a paginated list of organizations.
+# - show: Fetches details of a specific organization by ID.
+# - create: Creates a new organization.
+# - update: Updates an existing organization by ID.
+# - destroy: Deletes an organization by ID.
+#
+# Before Actions:
+# - authenticate_user!: Ensures the user is authenticated.
+# - roles_required: Ensures only users with the "super_admin" role can access the routes.
+#
+# Rescue From:
+# - StandardError: Logs unexpected errors and returns a 500 internal server error.
+# - ActiveRecord::RecordInvalid: Handles validation errors during create and update actions.
+# - ActiveRecord::RecordNotDestroyed: Handles errors during the destroy action.
+#
+# Constants:
+# - DEFAULT_PER_PAGE: Default number of items per page for pagination.
+
 class OrganizationsController < ApplicationController
 
   # Include the required concerns
