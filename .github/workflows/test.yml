@@ -20,4 +20,4 @@ jobs:
 
       - name: Run Tests in Docker Containers
         run: |
-          bash ./runTests.sh
+          bash ./run-tests.sh
