@@ -17,6 +17,7 @@ class ProfileControllerTest < ActionDispatch::IntegrationTest
       @manager
     when "director"
       @director
+    end
   end
 
   def authenticate_user(user)
