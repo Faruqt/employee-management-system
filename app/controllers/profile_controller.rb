@@ -1,3 +1,25 @@
+# ProfileController handles the profile-related actions for users.
+#
+# Includes:
+# - AccessRequired: Ensures access control.
+#
+# Actions:
+# - index: Fetches the profile of the current user based on the provided user type.
+#
+# Before Actions:
+# - authenticate_user!: Ensures user is authenticated.
+#
+# Rescue From:
+# - StandardError: Logs unexpected errors and returns a 500 internal server error.
+#
+# Private Methods:
+# - user_class_for(user_type): Returns the user class (Employee or Admin) based on the user type.
+# - validate_profile_params: Validates the presence and validity of the user type parameter.
+# - render_error(message, status): Renders an error message with the specified status.
+#
+# Constants:
+# - Constants::USER_TYPES: A list of valid user types ('employee', 'manager', 'director').
+#
 class ProfileController < ApplicationController
   # Include the required concerns
   include AccessRequired
