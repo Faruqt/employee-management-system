@@ -15,7 +15,6 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
     @manager2 = Admin.create!(first_name: "Mark", last_name: "Doe", email: "test_mark_one@gmail.co", telephone: "123456789", admin_type: Admin.admin_types[:manager], branch: @branch, area: @area)
     @manager3 = Admin.create!(first_name: "Olivia", last_name: "Doe", email: "test_olivia_one@gmail.co", telephone: "123456789", admin_type: Admin.admin_types[:manager], branch: @branch, area: @area)
     @director2 = Admin.create!(first_name: "Jane", last_name: "Doe", email: "test_director_jane@gmail.co", telephone: "123456789", admin_type: Admin.admin_types[:director], branch: @branch)
-
   end
 
   def get_user_by_user_type(user_type)
@@ -42,9 +41,9 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
   end
 
   [
-    {user_type: "employee"},
-    { user_type: "manager"},
-    { user_type: "director"},
+    { user_type: "employee" },
+    { user_type: "manager" },
+    { user_type: "director" }
   ].each do |params|
     define_method("test_should_return_error_if_user_is_not_authenticated_#{params[:user_type]}") do
       user_type = params[:user_type]
@@ -68,16 +67,16 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
   end
 
     [
-    {user_type: "super_admin"},
-    { user_type: "manager"},
-    { user_type: "director"},
+    { user_type: "super_admin" },
+    { user_type: "manager" },
+    { user_type: "director" }
   ].each do |params|
     define_method("test_admin_should_return_error_if_no_user_id_is_provided_#{params[:user_type]}") do
       user_type = params[:user_type]
       user = get_user_by_user_type(user_type)
       access_token = authenticate_user(user)
       post @archive_path, headers: {
-        "Authorization" => "Bearer #{access_token}"}, params: { id: "" }
+        "Authorization" => "Bearer #{access_token}" }, params: { id: "" }
 
       assert_response :bad_request
 
@@ -89,9 +88,9 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
 
 
   [
-    {user_type: "super_admin"},
-    { user_type: "manager"},
-    { user_type: "director"},
+    { user_type: "super_admin" },
+    { user_type: "manager" },
+    { user_type: "director" }
   ].each do |params|
     define_method("test_admin_should_return_error_if_no_action_type_is_provided_#{params[:user_type]}") do
       user_type = params[:user_type]
@@ -99,22 +98,21 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
       access_token = authenticate_user(user)
 
       post @archive_path, headers: {
-        "Authorization" => "Bearer #{access_token}"}, params: { id: @employee2.id }
-      
+        "Authorization" => "Bearer #{access_token}" }, params: { id: @employee2.id }
+
       assert_response :bad_request
 
       response_data = JSON.parse(response.body)
 
       assert_equal "Action type is required", response_data["error"]
-
     end
   end
 
 
   [
-    {user_type: "super_admin"},
-    { user_type: "manager"},
-    { user_type: "director"},
+    { user_type: "super_admin" },
+    { user_type: "manager" },
+    { user_type: "director" }
   ].each do |params|
     define_method("test_admin_should_be_able_to_archive_another_user_#{params[:user_type]}") do
       user_type = params[:user_type]
@@ -134,9 +132,9 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
   end
 
   [
-    {user_type: "super_admin"},
-    { user_type: "manager"},
-    { user_type: "director"},
+    { user_type: "super_admin" },
+    { user_type: "manager" },
+    { user_type: "director" }
   ].each do |params|
     define_method("test_admin_should_be_able_to_unarchive_another_user_#{params[:user_type]}") do
       user_type = params[:user_type]
@@ -181,9 +179,9 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
   end
 
   [
-    {user_type: "employee"},
-    { user_type: "manager"},
-    { user_type: "director"},
+    { user_type: "employee" },
+    { user_type: "manager" },
+    { user_type: "director" }
   ].each do |params|
     define_method("test_delete_user_should_return_error_if_user_is_not_authenticated_#{params[:user_type]}") do
       user_type = params[:user_type]
@@ -206,7 +204,6 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
     response_data = JSON.parse(response.body)
 
     assert_equal "You are not authorized to carry out this action", response_data["error"]
-
   end
 
   test "manager should not be able to delete a director" do
@@ -220,7 +217,6 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
     response_data = JSON.parse(response.body)
 
     assert_equal "You are not authorized to carry out this action", response_data["error"]
-
   end
 
   test "director should not be able to delete another director" do
@@ -233,7 +229,6 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
     response_data = JSON.parse(response.body)
 
     assert_equal "You are not authorized to carry out this action", response_data["error"]
-
   end
 
   test "director should not be able to delete a super admin" do
@@ -246,7 +241,6 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
     response_data = JSON.parse(response.body)
 
     assert_equal "You are not authorized to carry out this action", response_data["error"]
-
   end
 
   test "super admin should be able to delete an employee" do
@@ -260,13 +254,13 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal "User deleted successfully", response_data["message"]
 
-    @employee2.reload 
+    @employee2.reload
 
     # enure the user sensitive data is deleted
     assert_equal "Deleted", @employee2.first_name
     assert_equal "User", @employee2.last_name
     assert_equal "000000", @employee2.telephone
-    assert_equal "deleted_user#{@employee2.id}@deleted.com" , @employee2.email
+    assert_equal "deleted_user#{@employee2.id}@deleted.com", @employee2.email
   end
 
   test "super admin should be able to delete a manager" do
@@ -288,8 +282,8 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
     assert_equal "User", @manager2.last_name
 
     assert_equal "000000", @manager2.telephone
-    assert_equal "deleted_user#{@manager2.id}@deleted.com" , @manager2.email
-  end 
+    assert_equal "deleted_user#{@manager2.id}@deleted.com", @manager2.email
+  end
 
   test "super admin should be able to delete a director" do
     user = @super_admin
@@ -310,8 +304,7 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
     assert_equal "User", @director2.last_name
 
     assert_equal "000000", @director2.telephone
-    assert_equal "deleted_user#{@director2.id}@deleted.com" , @director2.email
-
+    assert_equal "deleted_user#{@director2.id}@deleted.com", @director2.email
   end
 
   test "director should be able to delete a manager" do
@@ -333,7 +326,7 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
     assert_equal "User", @manager3.last_name
 
     assert_equal "000000", @manager3.telephone
-    assert_equal "deleted_user#{@manager3.id}@deleted.com" , @manager3.email
+    assert_equal "deleted_user#{@manager3.id}@deleted.com", @manager3.email
   end
 
   test "director should be able to delete an employee" do
@@ -356,8 +349,7 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
     assert_equal "User", @employee3.last_name
 
     assert_equal "000000", @employee3.telephone
-    assert_equal "deleted_user#{@employee3.id}@deleted.com" , @employee3.email
-
+    assert_equal "deleted_user#{@employee3.id}@deleted.com", @employee3.email
   end
 
   test "manager should be able to delete an employee" do
@@ -379,7 +371,6 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
     assert_equal "User", @employee4.last_name
 
     assert_equal "000000", @employee4.telephone
-    assert_equal "deleted_user#{@employee4.id}@deleted.com" , @employee4.email
+    assert_equal "deleted_user#{@employee4.id}@deleted.com", @employee4.email
   end
-
 end

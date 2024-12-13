@@ -31,9 +31,9 @@ class ProfileControllerTest < ActionDispatch::IntegrationTest
   end
 
   [
-    {user_type: "employee"},
-    { user_type: "manager"},
-    { user_type: "director"},
+    { user_type: "employee" },
+    { user_type: "manager" },
+    { user_type: "director" }
   ].each do |params|
     define_method("test_should_return_unauthorized_if_no_access_token_and_user_type_is_provided_#{params[:user_type]}") do
       get @profile_path
@@ -44,9 +44,9 @@ class ProfileControllerTest < ActionDispatch::IntegrationTest
   end
 
   [
-    {user_type: "employee"},
-    { user_type: "manager"},
-    { user_type: "director"},
+    { user_type: "employee" },
+    { user_type: "manager" },
+    { user_type: "director" }
   ].each do |params|
     define_method("test_should_return_error_if_user_type_is_not_provided_#{params[:user_type]}") do
       user_type = params[:user_type]
@@ -60,9 +60,9 @@ class ProfileControllerTest < ActionDispatch::IntegrationTest
   end
 
   [
-    {user_type: "employee"},
-    { user_type: "manager"},
-    { user_type: "director"},
+    { user_type: "employee" },
+    { user_type: "manager" },
+    { user_type: "director" }
   ].each do |params|
       define_method("test_should_return_error_if_user_type_is_invalid_#{params[:user_type]}") do
       user_type = params[:user_type]
@@ -76,9 +76,9 @@ class ProfileControllerTest < ActionDispatch::IntegrationTest
   end
 
     [
-    {user_type: "employee"},
-    { user_type: "manager"},
-    { user_type: "director"},
+    { user_type: "employee" },
+    { user_type: "manager" },
+    { user_type: "director" }
   ].each do |params|
     define_method("test_should_return_user_profile_#{params[:user_type]}") do
       user_type = params[:user_type]
@@ -91,5 +91,4 @@ class ProfileControllerTest < ActionDispatch::IntegrationTest
       assert_equal user.first_name, response_data["profile"]["first_name"]
     end
   end
-
 end
