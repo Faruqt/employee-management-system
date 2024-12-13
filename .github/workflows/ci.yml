@@ -62,13 +62,13 @@ jobs:
           git status
           
       - name: Stage changes
-        run: git add '**/*.rb'
+        run: |
+          git add .
 
       - name: Commit formatted changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "automated code fixes and formatting by rubocop"
-          file_pattern: '**/*.rb'
 
   test:
     needs: [scan_ruby, scan_js, lint]
