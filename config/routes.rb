@@ -51,6 +51,10 @@ Rails.application.routes.draw do
   # Defines the routes for the profile controller
   get "profile" => "profile#index"
 
+  # Defines the routes for the user management controller
+  post "user/toggle_archive_state" => "user_management#toggle_archive_state"
+  delete "user/:id" => "user_management#destroy"
+
   # Catch-all route for undefined paths
   match "*path", to: "application#route_not_found", via: :all
 end
