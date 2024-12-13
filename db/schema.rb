@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_12_08_181809) do
+ActiveRecord::Schema[8.0].define(version: 2024_12_13_025709) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -21,13 +21,11 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_08_181809) do
     t.string "email"
     t.string "telephone"
     t.boolean "is_deleted", default: false
-    t.boolean "is_manager", default: false
-    t.boolean "is_director", default: false
-    t.boolean "is_super_admin", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "branch_id"
     t.uuid "area_id"
+    t.string "admin_type"
     t.index ["area_id"], name: "index_admins_on_area_id"
     t.index ["branch_id"], name: "index_admins_on_branch_id"
   end
