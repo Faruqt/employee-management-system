@@ -44,10 +44,7 @@ class SessionsController < ApplicationController
     password = params[:password]
 
     begin
-      user = Employee.find_by(email: email)
-      if !user
-        user = Admin.find_by(email: email)
-      end
+      user = Employee.find_by(email: email) || Admin.find_by(email: email)
 
       if !user
         render json: { error: "Account does not exist" }, status: :unauthorized

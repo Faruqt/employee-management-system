@@ -118,11 +118,11 @@ class RegistrationsController < ApplicationController
         # Create the user in the database
         user = case user_type
         when "employee"
-                create_employee(attributes)
+          create_employee(attributes)
         when "director", "manager"
-                create_admin(attributes, user_type)
+          create_admin(attributes, user_type)
         else
-                raise "Unknown user type"
+          raise "Unknown user type"
         end
 
         # Call cognito service to register the user
@@ -218,10 +218,10 @@ class RegistrationsController < ApplicationController
   def set_admin_role(attributes, admin, user_type)
     case user_type
     when "manager"
-      admin.is_manager = true
+      admin.admin_type = Admin.admin_types[:manager]
       admin.area_id = attributes[:area_id]
     when "director"
-      admin.is_director = true
+      admin.admin_type = Admin.admin_types[:director]
     end
   end
 
@@ -328,13 +328,13 @@ class RegistrationsController < ApplicationController
     end
 
     # check if the admin belongs to the branch
-    if admin.is_director || admin.is_manager
+    if admin.admin_type == Admin.admin_types[:director] || admin.admin_type == Admin.admin_types[:manager]
       unless admin.branch_id == branch_id
         render_error("You are not authorized to assign users to the specified branch.", :unauthorized)
       end
     end
 
-    if area_id && admin.is_manager
+    if area_id && admin.admin_type == Admin.admin_types[:manager]
       # check if the manager belongs to the area
       unless admin.area_id == area_id
         render_error("You are not authorized to assign users to the specified area.", :unauthorized)

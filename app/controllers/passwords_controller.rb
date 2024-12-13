@@ -206,7 +206,6 @@ class PasswordsController < ApplicationController
         # Check if email, new_password, and confirmation_code are present
         if email.blank? || new_password.blank? || confirmation_code.blank?
             return render_error("Email, new password, and confirmation code are required")
-
         end
 
         check_email_is_valid(email)
@@ -252,10 +251,7 @@ class PasswordsController < ApplicationController
     def check_user_exists
         email = params[:email]
 
-        user = Employee.find_by(email: email)
-        if !user
-            user = Admin.find_by(email: email)
-        end
+        user = Employee.find_by(email: email) || Admin.find_by(email: email)
 
         unless user
             render_error("User not found", :not_found)
@@ -286,21 +282,21 @@ class PasswordsController < ApplicationController
         # check if the admin has the required role to change the password
         if user_type == "employee"
             # check if the admin is a manager or a director
-            unless admin.is_manager || admin.is_director || admin.is_super_admin
+            unless admin.admin_type == Admin.admin_types[:manager] || admin.admin_type == Admin.admin_types[:director] || admin.admin_type == Admin.admin_types[:super_admin]
                 Rails.logger.error("#{current_user_email} tried to reset the password of an employee")
                 render_error("You are not authorized to reset the password of an employee", :unauthorized)
             end
 
         elsif user_type == "manager"
             # check if the admin is a director or a super admin
-            unless admin.is_director || admin.is_super_admin
+            unless admin.admin_type == Admin.admin_types[:director] || admin.admin_type == Admin.admin_types[:super_admin]
                 Rails.logger.error("#{current_user_email} tried to reset the password of a manager")
                 render_error("You are not authorized to reset the password of a manager", :unauthorized)
             end
 
         elsif user_type == "director"
             # check if the admin is a super admin
-            unless admin.is_super_admin
+            unless admin.admin_type == Admin.admin_types[:super_admin]
                 Rails.logger.error("#{current_user_email} tried to reset the password of a director")
                 render_error("You are not authorized to reset the password of a director", :unauthorized)
             end

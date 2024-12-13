@@ -216,9 +216,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     response_data = JSON.parse(@response.body)
 
     assert_equal "Henry", response_data["user"]["first_name"]
-    assert_equal true, response_data["user"]["is_manager"]
-    assert_equal false, response_data["user"]["is_director"]
-    assert_equal false, response_data["user"]["is_super_admin"]
+    assert_equal "manager", response_data["user"]["admin_type"]
     assert_equal "Admin", response_data["user"]["last_name"]
     assert_equal "123456789", response_data["user"]["telephone"]
     assert_equal @branch.id, response_data["user"]["branch"]["id"]
@@ -243,9 +241,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     response_data = JSON.parse(@response.body)
 
     assert_equal "Paul", response_data["user"]["first_name"]
-    assert_equal false, response_data["user"]["is_manager"]
-    assert_equal true, response_data["user"]["is_director"]
-    assert_equal false, response_data["user"]["is_super_admin"]
+    assert_equal "director", response_data["user"]["admin_type"]
     assert_equal "Admin", response_data["user"]["last_name"]
     assert_equal "123456789", response_data["user"]["telephone"]
     assert_equal @branch.id, response_data["user"]["branch"]["id"]

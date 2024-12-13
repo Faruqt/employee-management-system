@@ -14,7 +14,7 @@ module RolesRequired
     admin = Admin.find_by(email: @current_user["email"])
 
     # Check if the admin exists and if they have the required role
-    unless admin && allowed_roles.any? { |role| admin.send("is_#{role}") }
+    unless admin && allowed_roles.any? { |role| admin.admin_type == role.to_s }
       Rails.logger.error("Unauthorized access by user: #{@current_user["email"]}")
       render json: { message: "You are not authorized to perform this action" }, status: :unauthorized
     end
