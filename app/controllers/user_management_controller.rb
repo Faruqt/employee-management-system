@@ -60,6 +60,7 @@ class UserManagementController < ApplicationController
         users = Employee.filter(is_deleted: false, is_active: true).page(page).per(per_page).order(created_at: :desc)
       else
         users = Admin.filter(is_deleted: false).page(page).per(per_page).order(created_at: :desc)
+      end
 
       render_users(users)
     rescue StandardError => e
