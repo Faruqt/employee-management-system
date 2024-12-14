@@ -53,7 +53,7 @@ Rails.application.routes.draw do
 
   # Defines the routes for the user management controller
   get "users/:user_type" => "user_management#index"
-  get "users/archived" => "user_management#archived"
+  get "users/status/archived" => "user_management#archived"
   get "users/:id" => "user_management#show"
   post "users/toggle_archive_state" => "user_management#toggle_archive_state"
   delete "users/:id" => "user_management#destroy"
