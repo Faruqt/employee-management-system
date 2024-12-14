@@ -4,9 +4,9 @@ on:
   pull_request:
   push:
     branches: [ main ]
-  paths:
-      - 'backend-api/**'
-      - ".github/workflows/ci.yml"
+    paths:
+        - 'backend-api/**'
+        - ".github/workflows/ci.yml"
 
 
 jobs:
