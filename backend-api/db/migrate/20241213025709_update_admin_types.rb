@@ -1,6 +1,5 @@
 class UpdateAdminTypes < ActiveRecord::Migration[8.0]
   def up
-
     # Add the new `admin_type` column before making any updates
     add_column :admins, :admin_type, :string
 
@@ -25,5 +24,4 @@ class UpdateAdminTypes < ActiveRecord::Migration[8.0]
     # Remove the `admin_type` column
     remove_column :admins, :admin_type, :string
   end
-
 end

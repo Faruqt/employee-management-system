@@ -1,15 +1,15 @@
 class Admin < ApplicationRecord
     # Constants for admin types
     ADMIN_TYPES = {
-        manager: 'manager',
-        director: 'director',
-        super_admin: 'super_admin',
+        manager: "manager",
+        director: "director",
+        super_admin: "super_admin"
     }.freeze
 
     # Validations
     validates :first_name, presence: true
     validates :email, presence: true, uniqueness: true
-    
+
     # Validation for admin_type only if it's being set
     validate :validate_admin_type, if: :admin_type?
 

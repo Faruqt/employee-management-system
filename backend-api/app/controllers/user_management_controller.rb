@@ -27,7 +27,7 @@
 # - `check_user_can_delete_another_user`: Checks if the current user is authorized to delete another user.
 # - `render_users`: Renders a list of users with pagination metadata.
 # - `pagination_setup`: Sets up pagination parameters.
-# 
+#
 # Constants:
 # - `Constants::USER_TYPES`: A list of valid user types ('employee', 'manager', 'director').
 # - `Constants::DEFAULT_PER_PAGE`: Default number of items per page for pagination.
@@ -74,7 +74,7 @@ class UserManagementController < ApplicationController
     begin
 
       page, per_page = pagination_setup(params)
-      
+
       # Use kaminari's `page` and `per` methods to paginate
       users = Employee.where(is_deleted: false, is_active: false).page(page).per(per_page).order(created_at: :desc)
 
@@ -99,7 +99,7 @@ class UserManagementController < ApplicationController
       render_error("An error occurred while fetching user, please try again")
     end
   end
-  
+
   # POST /toggle_archive_state
   def toggle_archive_state
     begin
@@ -113,10 +113,10 @@ class UserManagementController < ApplicationController
 
       action = params[:action_type].to_s.downcase
       case action
-      when 'true', 'archive'
+      when "true", "archive"
         user.is_active = false
         message = "User archived successfully"
-      when 'false', 'unarchive'
+      when "false", "unarchive"
         user.is_active = true
         message = "User unarchived successfully"
       else
@@ -172,7 +172,7 @@ class UserManagementController < ApplicationController
   def set_cognito_service
     @cognito_service = CognitoService.new
   end
-  
+
   def render_error(message, status = :bad_request)
     render json: { error: message }, status: status
   end
@@ -193,7 +193,7 @@ class UserManagementController < ApplicationController
     check_user_that_can_get_users_list(user_type)
   end
 
-  def check_user_exists(action="show")
+  def check_user_exists(action = "show")
     user_id = params[:id]
 
     if user_id.blank?
@@ -204,7 +204,7 @@ class UserManagementController < ApplicationController
     # Find the user in the Employee model
     user = Employee.find_by(id: user_id)
     if action == "delete" && !user
-      # check if the user is an admin 
+      # check if the user is an admin
       user = Admin.find_by(id: user_id)
     end
 
@@ -232,9 +232,9 @@ class UserManagementController < ApplicationController
     # Check if a manager is trying to get a list of managers or directors
     # then check class of user
     if admin.admin_type == Admin.admin_types[:manager] && (user_type == Admin.admin_types[:manager] || user_type == Admin.admin_types[:director])
-      return render_error("You are not authorized to carry out this action", :unauthorized)
+      render_error("You are not authorized to carry out this action", :unauthorized)
     elsif admin.admin_type == Admin.admin_types[:director] && user_type == Admin.admin_types[:director]
-      return render_error("You are not authorized to carry out this action", :unauthorized)
+      render_error("You are not authorized to carry out this action", :unauthorized)
     end
   end
 
@@ -289,8 +289,7 @@ class UserManagementController < ApplicationController
 
     per_page = (params[:per_page] || Constants::DEFAULT_PER_PAGE).to_i
     per_page = Constants::DEFAULT_PER_PAGE if per_page < 1 # ensure per_page is a positive integer
-  
-    [page, per_page]
-  end
 
+    [ page, per_page ]
+  end
 end
