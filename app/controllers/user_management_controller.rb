@@ -57,9 +57,9 @@ class UserManagementController < ApplicationController
 
       # Use kaminari's `page` and `per` methods to paginate
       if user_type == "employee"
-        users = Employee.filter(is_deleted: false, is_active: true).page(page).per(per_page).order(created_at: :desc)
+        users = Employee.where(is_deleted: false, is_active: true).page(page).per(per_page).order(created_at: :desc)
       else
-        users = Admin.filter(is_deleted: false).page(page).per(per_page).order(created_at: :desc)
+        users = Admin.where(is_deleted: false).page(page).per(per_page).order(created_at: :desc)
       end
 
       render_users(users)
@@ -69,14 +69,14 @@ class UserManagementController < ApplicationController
     end
   end
 
-  # GET /users/archived
+  # GET /users/status/archived
   def archived
     begin
 
       page, per_page = pagination_setup(params)
       
       # Use kaminari's `page` and `per` methods to paginate
-      users = Employee.filter(is_deleted: false, is_active: false).page(page).per(per_page).order(created_at: :desc)
+      users = Employee.where(is_deleted: false, is_active: false).page(page).per(per_page).order(created_at: :desc)
 
       render_users(users)
     rescue StandardError => e
