@@ -2,8 +2,9 @@ require "test_helper"
 
 class UserManagementControllerTest < ActionDispatch::IntegrationTest
   def setup
-    @archive_path = "/user/toggle_archive_state"
-    @delete_path = "/user/"
+    @archive_path = "/users/toggle_archive_state"
+    @common_path = "/users/"
+    @get_archived_users_path = "/users/status/archived"
 
     setup_test_data
     setup_cognito_mock
@@ -159,7 +160,7 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
     non_existent_id = SecureRandom.uuid
     user = @super_admin
     access_token = authenticate_user(user)
-    delete "#{@delete_path}#{non_existent_id}", headers: { "Authorization" => "Bearer #{access_token}" }
+    delete "#{@common_path}#{non_existent_id}", headers: { "Authorization" => "Bearer #{access_token}" }
 
     assert_response :not_found
 
@@ -171,7 +172,7 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
   test "employee_should_not_be_able_to_delete_another_user" do
     user = @employee1
     access_token = authenticate_user(user)
-    delete "#{@delete_path}#{@employee2.id}", headers: { "Authorization" => "Bearer #{access_token}" }
+    delete "#{@common_path}#{@employee2.id}", headers: { "Authorization" => "Bearer #{access_token}" }
 
     assert_response :unauthorized
 
@@ -188,7 +189,7 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
     define_method("test_delete_user_should_return_error_if_user_is_not_authenticated_#{params[:user_type]}") do
       user_type = params[:user_type]
       user = get_user_by_user_type(user_type)
-      delete "#{@delete_path}#{@employee2.id}"
+      delete "#{@common_path}#{@employee2.id}"
 
       assert_response :unauthorized
       response_data = JSON.parse(response.body)
@@ -199,7 +200,7 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
   test "manager should not be able to delete another manager" do
     user = @manager
     access_token = authenticate_user(user)
-    delete "#{@delete_path}#{@manager2.id}", headers: { "Authorization" => "Bearer #{access_token}" }
+    delete "#{@common_path}#{@manager2.id}", headers: { "Authorization" => "Bearer #{access_token}" }
 
     assert_response :unauthorized
 
@@ -213,7 +214,7 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
     user = @manager
     access_token = authenticate_user(user)
 
-    delete "#{@delete_path}#{@director2.id}", headers: { "Authorization" => "Bearer #{access_token}" }
+    delete "#{@common_path}#{@director2.id}", headers: { "Authorization" => "Bearer #{access_token}" }
 
     assert_response :unauthorized
 
@@ -226,7 +227,7 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
   test "director should not be able to delete another director" do
     user = @director
     access_token = authenticate_user(user)
-    delete "#{@delete_path}#{@director2.id}", headers: { "Authorization" => "Bearer #{access_token}" }
+    delete "#{@common_path}#{@director2.id}", headers: { "Authorization" => "Bearer #{access_token}" }
 
     assert_response :unauthorized
 
@@ -239,7 +240,7 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
   test "director should not be able to delete a super admin" do
     user = @director
     access_token = authenticate_user(user)
-    delete "#{@delete_path}#{@super_admin.id}", headers: { "Authorization" => "Bearer #{access_token}" }
+    delete "#{@common_path}#{@super_admin.id}", headers: { "Authorization" => "Bearer #{access_token}" }
 
     assert_response :unauthorized
 
@@ -252,7 +253,7 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
   test "super admin should be able to delete an employee" do
     user = @super_admin
     access_token = authenticate_user(user)
-    delete "#{@delete_path}#{@employee2.id}", headers: { "Authorization" => "Bearer #{access_token}" }
+    delete "#{@common_path}#{@employee2.id}", headers: { "Authorization" => "Bearer #{access_token}" }
 
     assert_response :ok
 
@@ -272,7 +273,7 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
   test "super admin should be able to delete a manager" do
     user = @super_admin
     access_token = authenticate_user(user)
-    delete "#{@delete_path}#{@manager2.id}", headers: { "Authorization" => "Bearer #{access_token}" }
+    delete "#{@common_path}#{@manager2.id}", headers: { "Authorization" => "Bearer #{access_token}" }
 
     assert_response :ok
 
@@ -294,7 +295,7 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
   test "super admin should be able to delete a director" do
     user = @super_admin
     access_token = authenticate_user(user)
-    delete "#{@delete_path}#{@director2.id}", headers: { "Authorization" => "Bearer #{access_token}" }
+    delete "#{@common_path}#{@director2.id}", headers: { "Authorization" => "Bearer #{access_token}" }
 
     assert_response :ok
 
@@ -317,7 +318,7 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
   test "director should be able to delete a manager" do
     user = @director
     access_token = authenticate_user(user)
-    delete "#{@delete_path}#{@manager3.id}", headers: { "Authorization" => "Bearer #{access_token}" }
+    delete "#{@common_path}#{@manager3.id}", headers: { "Authorization" => "Bearer #{access_token}" }
 
     assert_response :ok
 
@@ -340,7 +341,7 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
     user = @director
     access_token = authenticate_user(user)
 
-    delete "#{@delete_path}#{@employee3.id}", headers: { "Authorization" => "Bearer #{access_token}" }
+    delete "#{@common_path}#{@employee3.id}", headers: { "Authorization" => "Bearer #{access_token}" }
 
     assert_response :ok
 
@@ -359,11 +360,11 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
     assert_equal "deleted_user#{@employee3.id}@deleted.com" , @employee3.email
 
   end
-
+  
   test "manager should be able to delete an employee" do
     user = @manager
     access_token = authenticate_user(user)
-    delete "#{@delete_path}#{@employee4.id}", headers: { "Authorization" => "Bearer #{access_token}" }
+    delete "#{@common_path}#{@employee4.id}", headers: { "Authorization" => "Bearer #{access_token}" }
 
     assert_response :ok
 
@@ -382,4 +383,155 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
     assert_equal "deleted_user#{@employee4.id}@deleted.com" , @employee4.email
   end
 
+
+  [
+    { user_type: "manager"},
+    { user_type: "director"},
+  ].each do |params|
+    define_method("test_get_users_should_return_error_if_user_is_not_authenticated_#{params[:user_type]}") do
+      user_type = params[:user_type]
+      user = get_user_by_user_type(user_type)
+      get "#{@common_path}employee"
+      
+      assert_response :unauthorized
+      response_data = JSON.parse(response.body)
+      assert_equal "Missing Authorization Header", response_data["message"]
+    end
+  end
+
+  [
+    { user_type: "manager"},
+    { user_type: "director"},
+    { user_type: "super_admin"},
+  ].each do |params|
+    define_method("test_get_archived_users_should_return_error_if_user_is_not_authenticated_#{params[:user_type]}") do
+      user_type = params[:user_type]
+      user = get_user_by_user_type(user_type)
+      get "#{@common_path}employee"
+      
+      assert_response :unauthorized
+      response_data = JSON.parse(response.body)
+      assert_equal "Missing Authorization Header", response_data["message"]
+    end
+  end
+
+  [
+    { user_type: "manager"},
+    { user_type: "director"},
+  ].each do |params|
+    define_method("test_manager_cannot_get_list_of_#{params[:user_type]}") do
+      user_type = params[:user_type]
+
+      user = @manager
+      access_token = authenticate_user(user)
+      get "#{@common_path}#{user_type}", headers: { "Authorization" => "Bearer #{access_token}" }
+
+      assert_response :unauthorized
+
+      response_data = JSON.parse(response.body)
+
+      assert_equal "You are not authorized to carry out this action", response_data["error"]
+    end
+  end
+
+  [
+    { user_type: "director"},
+  ].each do |params|
+    define_method("test_director_cannot_get_list_of_#{params[:user_type]}") do
+      user_type = params[:user_type]
+
+      user = @director
+      access_token = authenticate_user(user)
+      get "#{@common_path}#{user_type}", headers: { "Authorization" => "Bearer #{access_token}" }
+
+      assert_response :unauthorized
+
+      response_data = JSON.parse(response.body)
+
+      assert_equal "You are not authorized to carry out this action", response_data["error"]
+    end
+  end
+
+  [
+    { user_type: "employee"},
+    { user_type: "manager"},
+    { user_type: "director"},
+  ].each do |params|
+    define_method("test_super_admin_can_get_list_of_#{params[:user_type]}") do
+      user = @super_admin
+      access_token = authenticate_user(user)
+      get "#{@common_path}#{params[:user_type]}", headers: { "Authorization" => "Bearer #{access_token}" }
+
+      assert_response :ok
+
+      response_data = JSON.parse(response.body)
+
+      assert_operator response_data["users"].length, :>, 0
+      meta = response_data["meta"]
+
+      assert_equal 1, meta["current_page"]
+    end 
+  end
+
+  [
+    { user_type: "employee"},
+    { user_type: "manager"},
+  ].each do |params|
+    define_method("test_director_can_get_list_of_#{params[:user_type]}") do
+      user = @director
+      access_token = authenticate_user(user)
+      get "#{@common_path}#{params[:user_type]}", headers: { "Authorization" => "Bearer #{access_token}" }
+
+      assert_response :ok
+
+      response_data = JSON.parse(response.body)
+
+      assert_operator response_data["users"].length, :>, 0
+
+      meta = response_data["meta"]
+
+      assert_equal 1, meta["current_page"]
+
+    end 
+  end
+
+  test "manager_can_get_list_of_employees" do
+    user = @manager
+    access_token = authenticate_user(user)
+
+    get "#{@common_path}employee", headers: { "Authorization" => "Bearer #{access_token}" }
+    assert_response :ok
+
+    response_data = JSON.parse(response.body)
+
+    assert_operator response_data["users"].length, :>, 0
+
+    meta = response_data["meta"]
+
+    assert_equal 1, meta["current_page"]
+  end
+
+    [
+    { user_type: "manager"},
+    { user_type: "director"},
+  ].each do |params|
+    define_method("test_#{params[:user_type]}_can_get_list_of_archived_employees") do
+      user_type = params[:user_type]
+      user = get_user_by_user_type(user_type)
+      access_token = authenticate_user(user)
+
+      get @get_archived_users_path,  headers: { "Authorization" => "Bearer #{access_token}" }
+
+      assert_response :ok
+
+      response_data = JSON.parse(response.body)
+
+      assert_operator response_data["users"].length, :>, 0
+
+      meta = response_data["meta"]
+
+      assert_equal 1, meta["current_page"]
+
+    end
+  end
 end
