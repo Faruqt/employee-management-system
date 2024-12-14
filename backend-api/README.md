@@ -1,6 +1,6 @@
 # BACKEND API
 
-The Backend API is a RESTful service for managing organizations, branches, areas, create roles and assign directors, managers and employees to respective areas and branches. It provides endpoints to seamlessly manage your organization from within a single app.
+The Backend API is a RESTful service for managing organizations, branches, and areas. It allows for role creation and assigning directors, managers, and employees to respective areas and branches. The API provides endpoints to efficiently manage your organization within a single application.
 
 ## Setup
 

@@ -2,8 +2,8 @@
 
 This is a mono repository for the Employee Management System project. It includes the following components:
 
-- **Backend API**: A RESTful API responsible for managing employees, including their details, roles, and more.
-- **Lambda Functions**: Custom AWS Lambda functions used for authentication and other system tasks.
+- **Backend API**: A RESTful API designed to manage organizations, branches, areas, roles, and the assignment of employees to these structures. It includes endpoints to efficiently create and manage employees, assign roles such as directors, managers, and employees, and facilitate seamless organizational operations within a single app.
+- **Lambda Functions**: A custom AWS Lambda function that handles sending custom authentication messages, such as account creation and password reset notifications.
 
 ## Project Structure
 - `backend-api/`: Contains the backend API implementation.
