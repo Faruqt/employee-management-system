@@ -22,10 +22,20 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
+      - name: Install dependencies
+        run: |
+          cd backend-api
+          bundle install
+
+      - name: Verify Bundler is working
+        run: |
+          cd backend-api
+          bundle check
+
       - name: Scan for common Rails security vulnerabilities using static analysis
         run: |
-          cd backend-api 
-          bin/brakeman --no-pager
+          cd backend-api
+          bundle exec brakeman --no-pager
 
   scan_js:
     runs-on: ubuntu-latest
@@ -39,6 +49,16 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
+  
+      - name: Install dependencies
+        run: |
+          cd backend-api
+          bundle install
+
+      - name: Verify Bundler is working
+        run: |
+          cd backend-api
+          bundle check
 
       - name: Scan for security vulnerabilities in JavaScript dependencies
         run: |
