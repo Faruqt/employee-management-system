@@ -352,7 +352,7 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
     assert_equal "000000", @employee3.telephone
     assert_equal "deleted_user#{@employee3.id}@deleted.com", @employee3.email
   end
-  
+
   test "manager should be able to delete an employee" do
     user = @manager
     access_token = authenticate_user(user)
@@ -376,14 +376,14 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
   end
 
   [
-    { user_type: "manager"},
-    { user_type: "director"},
+    { user_type: "manager" },
+    { user_type: "director" }
   ].each do |params|
     define_method("test_get_users_should_return_error_if_user_is_not_authenticated_#{params[:user_type]}") do
       user_type = params[:user_type]
       user = get_user_by_user_type(user_type)
       get "#{@common_path}employee"
-      
+
       assert_response :unauthorized
       response_data = JSON.parse(response.body)
       assert_equal "Missing Authorization Header", response_data["message"]
@@ -391,15 +391,15 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
   end
 
   [
-    { user_type: "manager"},
-    { user_type: "director"},
-    { user_type: "super_admin"},
+    { user_type: "manager" },
+    { user_type: "director" },
+    { user_type: "super_admin" }
   ].each do |params|
     define_method("test_get_archived_users_should_return_error_if_user_is_not_authenticated_#{params[:user_type]}") do
       user_type = params[:user_type]
       user = get_user_by_user_type(user_type)
       get "#{@common_path}employee"
-      
+
       assert_response :unauthorized
       response_data = JSON.parse(response.body)
       assert_equal "Missing Authorization Header", response_data["message"]
@@ -407,8 +407,8 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
   end
 
   [
-    { user_type: "manager"},
-    { user_type: "director"},
+    { user_type: "manager" },
+    { user_type: "director" }
   ].each do |params|
     define_method("test_manager_cannot_get_list_of_#{params[:user_type]}") do
       user_type = params[:user_type]
@@ -426,7 +426,7 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
   end
 
   [
-    { user_type: "director"},
+    { user_type: "director" }
   ].each do |params|
     define_method("test_director_cannot_get_list_of_#{params[:user_type]}") do
       user_type = params[:user_type]
@@ -444,9 +444,9 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
   end
 
   [
-    { user_type: "employee"},
-    { user_type: "manager"},
-    { user_type: "director"},
+    { user_type: "employee" },
+    { user_type: "manager" },
+    { user_type: "director" }
   ].each do |params|
     define_method("test_super_admin_can_get_list_of_#{params[:user_type]}") do
       user = @super_admin
@@ -461,12 +461,12 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
       meta = response_data["meta"]
 
       assert_equal 1, meta["current_page"]
-    end 
+    end
   end
 
   [
-    { user_type: "employee"},
-    { user_type: "manager"},
+    { user_type: "employee" },
+    { user_type: "manager" }
   ].each do |params|
     define_method("test_director_can_get_list_of_#{params[:user_type]}") do
       user = @director
@@ -482,8 +482,7 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
       meta = response_data["meta"]
 
       assert_equal 1, meta["current_page"]
-
-    end 
+    end
   end
 
   test "manager_can_get_list_of_employees" do
@@ -503,8 +502,8 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
   end
 
     [
-    { user_type: "manager"},
-    { user_type: "director"},
+    { user_type: "manager" },
+    { user_type: "director" }
   ].each do |params|
     define_method("test_#{params[:user_type]}_can_get_list_of_archived_employees") do
       user_type = params[:user_type]
@@ -522,7 +521,6 @@ class UserManagementControllerTest < ActionDispatch::IntegrationTest
       meta = response_data["meta"]
 
       assert_equal 1, meta["current_page"]
-
     end
   end
 end
