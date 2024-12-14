@@ -77,6 +77,16 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
+      - name: Install dependencies
+        run: |
+          cd backend-api
+          bundle install
+
+      - name: Verify Bundler is working
+        run: |
+          cd backend-api
+          bundle check
+
       - name: Lint code for consistent style
         run: |
           cd backend-api
