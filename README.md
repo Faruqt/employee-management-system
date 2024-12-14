@@ -1,4 +1,4 @@
-# Employee Management System Mono Repo
+# EMPLOYEE MANAGEMENT SYSTEM MONO REPO
 
 This is a mono repository for the Employee Management System project. It includes the following components:
 
@@ -37,5 +37,5 @@ To learn how to deploy and manage Lambda functions, refer to the `lambda-functio
 3. Install dependencies for Lambda functions (if any):
     ```bash
     cd lambda-functions
-    # Implement code changes and deploy as per the instructions in the README
+    # Implement code changes and deploy as per the instructions in the README for the specific lambda function of interest
     ```
